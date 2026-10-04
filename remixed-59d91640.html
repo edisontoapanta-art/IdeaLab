@@ -1,0 +1,2256 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>IdeaLab Emprende</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Serif+Display:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --primary:#2563eb;--primary-dark:#1d4ed8;--primary-light:#dbeafe;
+  --accent:#06b6d4;--success:#10b981;--warning:#f59e0b;--danger:#ef4444;
+  --text-dark:#0f172a;--text-mid:#334155;--text-light:#64748b;--text-muted:#94a3b8;
+  --bg:#f0f4ff;--surface:#fff;--surface-alt:#f8faff;--border:#e2e8f0;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.06);--shadow-md:0 4px 16px rgba(37,99,235,.08);
+  --shadow-lg:0 12px 40px rgba(37,99,235,.12);
+  --radius:16px;--radius-sm:10px;--radius-xs:6px;
+  --font-body:'Sora',sans-serif;--font-display:'DM Serif Display',serif;--font-mono:'JetBrains Mono',monospace;
+  --sidebar-w:280px;--topbar-h:64px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text-dark);min-height:100vh;line-height:1.65;-webkit-font-smoothing:antialiased}
+#app{display:flex;min-height:100vh}
+
+/* SIDEBAR */
+#sidebar{width:var(--sidebar-w);background:linear-gradient(180deg,#0f172a,#1e293b);color:#e2e8f0;position:fixed;top:0;left:0;height:100vh;overflow-y:auto;z-index:200;display:flex;flex-direction:column;transition:transform .35s cubic-bezier(.4,0,.2,1);scrollbar-width:thin;scrollbar-color:#334155 transparent}
+#sidebar-logo{padding:28px 24px 20px;border-bottom:1px solid rgba(255,255,255,.07)}
+#sidebar-logo .logo-mark{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+#sidebar-logo .logo-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--primary),var(--accent));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px}
+#sidebar-logo .logo-name{font-family:var(--font-display);font-size:1.15rem;color:#fff;line-height:1.2}
+#sidebar-logo .logo-tagline{font-size:.7rem;color:#64748b;letter-spacing:.06em;text-transform:uppercase;padding-left:46px}
+#sidebar-progress{padding:16px 24px;border-bottom:1px solid rgba(255,255,255,.07)}
+#sidebar-progress .prog-label{font-size:.72rem;color:#64748b;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+#sidebar-progress .prog-bar-bg{height:6px;background:rgba(255,255,255,.08);border-radius:99px;overflow:hidden}
+#sidebar-progress .prog-bar-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--accent));border-radius:99px;transition:width .6s;width:0%}
+#sidebar-progress .prog-pct{font-size:.75rem;color:#94a3b8;margin-top:6px;font-family:var(--font-mono)}
+#sidebar-nav{flex:1;padding:12px}
+.nav-section-label{font-size:.65rem;color:#475569;text-transform:uppercase;letter-spacing:.1em;padding:12px 12px 6px;font-weight:600}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--radius-xs);cursor:pointer;margin-bottom:2px;transition:background .2s,color .2s;font-size:.82rem;color:#94a3b8;position:relative;user-select:none}
+.nav-item:hover{background:rgba(255,255,255,.06);color:#e2e8f0}
+.nav-item.active{background:rgba(37,99,235,.25);color:#60a5fa}
+.nav-item.active::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:60%;background:var(--accent);border-radius:0 3px 3px 0}
+.nav-item.completed .nav-num{background:var(--success);color:#fff}
+.nav-item.completed{color:#6ee7b7}
+.nav-num{width:22px;height:22px;min-width:22px;background:rgba(255,255,255,.08);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-family:var(--font-mono);font-weight:600}
+.nav-label{flex:1;line-height:1.3}
+.nav-check{font-size:.75rem;opacity:0;transition:opacity .2s}
+.nav-item.completed .nav-check{opacity:1}
+#sidebar-actions{padding:16px;border-top:1px solid rgba(255,255,255,.07);display:flex;flex-direction:column;gap:8px}
+.sidebar-btn{display:flex;align-items:center;gap:8px;padding:9px 14px;border-radius:var(--radius-xs);border:1px solid rgba(255,255,255,.1);background:transparent;color:#94a3b8;font-family:var(--font-body);font-size:.78rem;cursor:pointer;transition:all .2s}
+.sidebar-btn:hover{background:rgba(255,255,255,.06);color:#e2e8f0;border-color:rgba(255,255,255,.2)}
+.sidebar-btn.danger:hover{background:rgba(239,68,68,.15);color:#fca5a5;border-color:rgba(239,68,68,.3)}
+
+/* MAIN */
+#main{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;min-height:100vh}
+#topbar{height:var(--topbar-h);background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;display:flex;align-items:center;padding:0 32px;gap:16px}
+#menu-toggle{display:none;background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--text-mid);padding:4px}
+#topbar-title{flex:1;font-size:.9rem;font-weight:600;color:var(--text-mid)}
+#topbar-progress{display:flex;align-items:center;gap:10px;font-size:.78rem;color:var(--text-light);font-family:var(--font-mono)}
+.topbar-prog-bar{width:100px;height:4px;background:var(--border);border-radius:99px;overflow:hidden}
+.topbar-prog-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--accent));border-radius:99px;transition:width .5s;width:0%}
+
+/* SCREENS */
+.screen{display:none;animation:fadeInUp .4s ease}
+.screen.active{display:block}
+#screen-home.active{display:flex;flex-direction:column}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+/* HOME HERO */
+.home-hero{background:linear-gradient(135deg,#0f172a,#1e3a8a 50%,#0c4a6e);padding:80px 48px 60px;position:relative;overflow:hidden}
+.home-hero::before{content:'';position:absolute;top:-40%;right:-10%;width:600px;height:600px;background:radial-gradient(circle,rgba(6,182,212,.15),transparent 70%);border-radius:50%}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(6,182,212,.15);border:1px solid rgba(6,182,212,.3);color:#67e8f9;padding:6px 14px;border-radius:99px;font-size:.75rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;margin-bottom:24px;position:relative;z-index:1}
+.home-hero h1{font-family:var(--font-display);font-size:clamp(2rem,4vw,3.2rem);color:#fff;line-height:1.15;max-width:640px;margin-bottom:20px;position:relative;z-index:1}
+.home-hero h1 em{font-style:italic;color:#67e8f9}
+.home-hero p{font-size:1rem;color:#94a3b8;max-width:560px;margin-bottom:36px;position:relative;z-index:1;line-height:1.7}
+.home-actions{display:flex;gap:12px;flex-wrap:wrap;position:relative;z-index:1}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:var(--radius-sm);font-family:var(--font-body);font-size:.88rem;font-weight:600;cursor:pointer;border:none;transition:all .2s cubic-bezier(.4,0,.2,1);letter-spacing:.01em;text-decoration:none}
+.btn-primary{background:linear-gradient(135deg,var(--primary),var(--accent));color:#fff;box-shadow:0 4px 14px rgba(37,99,235,.4)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(37,99,235,.5)}
+.btn-secondary{background:rgba(255,255,255,.1);color:#e2e8f0;border:1px solid rgba(255,255,255,.2)}
+.btn-secondary:hover{background:rgba(255,255,255,.18);transform:translateY(-1px)}
+.btn-outline{background:transparent;color:var(--primary);border:2px solid var(--primary)}
+.btn-outline:hover{background:var(--primary-light)}
+.btn-ghost{background:var(--surface);color:var(--text-mid);border:1px solid var(--border);box-shadow:var(--shadow-sm)}
+.btn-ghost:hover{background:var(--surface-alt);border-color:var(--primary);color:var(--primary)}
+.btn-success{background:var(--success);color:#fff}
+.btn-success:hover{background:#059669;transform:translateY(-1px)}
+.btn-report{background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;box-shadow:0 4px 14px rgba(124,58,237,.4)}
+.btn-report:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(124,58,237,.5)}
+.btn-sm{padding:8px 16px;font-size:.8rem}
+.btn-lg{padding:14px 32px;font-size:.95rem}
+
+/* HOME FEATURES */
+.home-features{padding:48px;background:var(--surface)}
+.home-features h2{font-family:var(--font-display);font-size:1.6rem;color:var(--text-dark);margin-bottom:8px}
+.home-features .subtitle{color:var(--text-light);font-size:.9rem;margin-bottom:32px}
+.features-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px}
+.feature-card{background:var(--surface-alt);border:1px solid var(--border);border-radius:var(--radius);padding:20px;cursor:pointer;transition:all .25s;text-align:center}
+.feature-card:hover{border-color:var(--primary);box-shadow:var(--shadow-md);transform:translateY(-3px)}
+.feature-card .fc-icon{font-size:2rem;margin-bottom:10px}
+.feature-card .fc-num{font-family:var(--font-mono);font-size:.68rem;color:var(--primary);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.feature-card .fc-title{font-size:.85rem;font-weight:600;color:var(--text-dark);line-height:1.3}
+.feature-card .fc-status{margin-top:10px;font-size:.72rem;color:var(--text-muted);font-family:var(--font-mono)}
+.feature-card.completed-card{border-color:#10b981}
+
+/* STUDENT FORM */
+.home-student{padding:32px 48px;background:var(--bg);border-top:1px solid var(--border)}
+.home-student h3{font-size:1rem;font-weight:700;color:var(--text-dark);margin-bottom:6px}
+.home-student p{font-size:.82rem;color:var(--text-light);margin-bottom:20px}
+.student-form{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;max-width:960px}
+.form-group{display:flex;flex-direction:column;gap:5px}
+.form-group label{font-size:.75rem;font-weight:600;color:var(--text-mid);text-transform:uppercase;letter-spacing:.04em}
+.form-control{padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius-xs);font-family:var(--font-body);font-size:.85rem;color:var(--text-dark);background:var(--surface);transition:border-color .2s,box-shadow .2s;outline:none}
+.form-control:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+
+/* MODULE SCREEN */
+.module-header{background:linear-gradient(135deg,var(--primary-dark),#0c4a6e);padding:36px 48px;position:relative;overflow:hidden}
+.module-header::after{content:'';position:absolute;top:-50%;right:-5%;width:300px;height:300px;background:radial-gradient(circle,rgba(255,255,255,.05),transparent 70%);border-radius:50%}
+.module-breadcrumb{font-size:.75rem;color:rgba(255,255,255,.5);font-family:var(--font-mono);margin-bottom:16px}
+.module-breadcrumb span{color:rgba(255,255,255,.8)}
+.module-tag{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.7);padding:4px 12px;border-radius:99px;font-size:.72rem;font-weight:600;letter-spacing:.04em}
+.module-header h2{font-family:var(--font-display);font-size:clamp(1.4rem,3vw,2rem);color:#fff;margin:10px 0 8px}
+.module-header .module-author{font-size:.8rem;color:#67e8f9;font-style:italic}
+.module-body{padding:36px 48px;max-width:900px}
+
+/* THEORY CARD */
+.theory-card{background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--primary);border-radius:var(--radius);padding:24px 28px;margin-bottom:28px;box-shadow:var(--shadow-sm)}
+.theory-card .theory-label{display:flex;align-items:center;gap:8px;font-size:.72rem;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px}
+.theory-card p{font-size:.9rem;color:var(--text-mid);line-height:1.75}
+.theory-card .theory-cite{font-size:.78rem;color:var(--text-muted);margin-top:10px;font-style:italic;font-family:var(--font-mono);border-top:1px solid var(--border);padding-top:10px}
+
+/* QUESTION BLOCKS */
+.question-block{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);padding:22px 24px;margin-bottom:18px;transition:border-color .2s,box-shadow .2s}
+.question-block:focus-within{border-color:var(--primary);box-shadow:0 0 0 4px rgba(37,99,235,.06)}
+.question-label{font-size:.8rem;font-weight:700;color:var(--text-mid);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.question-text{font-size:.92rem;color:var(--text-dark);margin-bottom:12px;line-height:1.6;font-weight:500}
+.question-hint{font-size:.78rem;color:var(--text-muted);margin-bottom:12px;font-style:italic;line-height:1.5}
+.answer-textarea{width:100%;padding:12px 16px;border:1.5px solid var(--border);border-radius:var(--radius-xs);font-family:var(--font-body);font-size:.88rem;color:var(--text-dark);background:var(--surface-alt);resize:vertical;min-height:100px;outline:none;transition:border-color .2s,box-shadow .2s;line-height:1.65}
+.answer-textarea:focus{border-color:var(--primary);background:var(--surface);box-shadow:0 0 0 3px rgba(37,99,235,.08)}
+.feedback-msg{display:none;margin-top:8px;padding:8px 12px;border-radius:var(--radius-xs);font-size:.78rem;font-weight:500;align-items:center;gap:6px}
+.feedback-msg.show{display:flex}
+.feedback-msg.info{background:#eff6ff;color:#1d4ed8}
+.feedback-msg.warn{background:#fffbeb;color:#92400e}
+.feedback-msg.good{background:#ecfdf5;color:#065f46}
+.char-counter{text-align:right;font-size:.72rem;color:var(--text-muted);font-family:var(--font-mono);margin-top:4px}
+.char-counter.low{color:var(--warning)}
+.char-counter.ok{color:var(--success)}
+
+/* MODULE ACTIONS */
+.module-actions{display:flex;align-items:center;gap:12px;margin-top:32px;padding-top:24px;border-top:1px solid var(--border);flex-wrap:wrap}
+.module-actions .spacer{flex:1}
+
+/* PROGRESS TRACKER */
+.progress-tracker{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;margin-top:24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.pt-bar{flex:1;min-width:180px}
+.pt-label{font-size:.72rem;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.pt-track{height:6px;background:var(--border);border-radius:99px;overflow:hidden}
+.pt-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--accent));border-radius:99px;transition:width .5s}
+.pt-pct{font-family:var(--font-mono);font-size:1.1rem;font-weight:700;color:var(--primary)}
+.pt-modules{font-size:.8rem;color:var(--text-light)}
+.step-dots{display:flex;gap:6px;margin-top:16px;flex-wrap:wrap}
+.step-dot{width:10px;height:10px;border-radius:50%;background:var(--border);cursor:pointer;transition:background .2s,transform .2s}
+.step-dot.done{background:var(--success)}
+.step-dot.active{background:var(--primary);transform:scale(1.3)}
+
+/* ALERT */
+.alert-banner{display:none;padding:14px 20px;border-radius:var(--radius-sm);margin-bottom:20px;font-size:.87rem;align-items:center;gap:10px;font-weight:500;animation:slideDown .3s ease}
+.alert-banner.show{display:flex}
+.alert-banner.success{background:#ecfdf5;border:1px solid #6ee7b7;color:#065f46}
+.alert-banner.error{background:#fef2f2;border:1px solid #fca5a5;color:#991b1b}
+@keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(15,23,42,.6);backdrop-filter:blur(4px);z-index:500;align-items:center;justify-content:center;animation:fadeIn .25s ease}
+.modal-overlay.show{display:flex}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow-lg);width:min(540px,92vw);max-height:85vh;overflow-y:auto;animation:scaleIn .3s cubic-bezier(.34,1.56,.64,1)}
+@keyframes scaleIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
+.modal-header{padding:24px 28px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.modal-header h3{font-size:1.05rem;font-weight:700;color:var(--text-dark)}
+.modal-close{background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--text-muted);padding:4px;border-radius:6px;transition:color .2s,background .2s}
+.modal-close:hover{background:var(--bg);color:var(--text-dark)}
+.modal-body{padding:24px 28px}
+.export-option{display:flex;align-items:center;gap:14px;padding:16px;border:1.5px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;margin-bottom:12px;transition:all .2s}
+.export-option:hover{border-color:var(--primary);background:var(--primary-light)}
+.export-option .eo-icon{width:44px;height:44px;border-radius:var(--radius-xs);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0}
+.export-option .eo-text h4{font-size:.88rem;font-weight:700;color:var(--text-dark)}
+.export-option .eo-text p{font-size:.78rem;color:var(--text-light);margin-top:2px}
+
+/* REPORT LOADING OVERLAY */
+#report-loading{display:none;position:fixed;inset:0;background:rgba(15,23,42,.85);backdrop-filter:blur(8px);z-index:600;align-items:center;justify-content:center;flex-direction:column;gap:24px}
+#report-loading.show{display:flex}
+.report-loading-card{background:var(--surface);border-radius:var(--radius);padding:40px 48px;text-align:center;box-shadow:var(--shadow-lg);max-width:400px;width:90%}
+.report-loading-spinner{width:56px;height:56px;border:4px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 20px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.report-loading-card h3{font-size:1.1rem;font-weight:700;color:var(--text-dark);margin-bottom:8px}
+.report-loading-card p{font-size:.85rem;color:var(--text-light);line-height:1.6}
+.report-loading-steps{margin-top:20px;display:flex;flex-direction:column;gap:8px}
+.rls-step{display:flex;align-items:center;gap:10px;font-size:.82rem;color:var(--text-muted);transition:color .3s}
+.rls-step.active{color:var(--primary);font-weight:600}
+.rls-step.done{color:var(--success)}
+.rls-icon{font-size:1rem}
+
+/* BIBLIO */
+.biblio-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px 28px;margin-top:24px}
+.biblio-card h3{font-family:var(--font-display);font-size:1.2rem;color:var(--text-dark);margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.biblio-entry{padding:12px 0;border-bottom:1px solid var(--border);font-size:.82rem;color:var(--text-mid);line-height:1.6}
+.biblio-entry:last-child{border-bottom:none}
+
+/* TOAST */
+#toast{position:fixed;bottom:24px;right:24px;background:#1e293b;color:#e2e8f0;padding:12px 20px;border-radius:var(--radius-sm);font-size:.85rem;font-weight:500;z-index:1000;display:flex;align-items:center;gap:8px;box-shadow:var(--shadow-lg);transform:translateY(80px);opacity:0;transition:all .35s cubic-bezier(.4,0,.2,1);max-width:340px}
+#toast.show{transform:translateY(0);opacity:1}
+
+/* RESPONSIVE */
+#sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:190}
+@media(max-width:900px){
+  #sidebar{transform:translateX(-100%)}
+  #sidebar.open{transform:translateX(0)}
+  #sidebar-overlay.show{display:block}
+  #main{margin-left:0}
+  #menu-toggle{display:block}
+  .home-hero,.home-features,.home-student{padding:32px 24px}
+  .module-header,.module-body{padding:24px}
+  .module-actions{flex-direction:column;align-items:stretch}
+  .module-actions .spacer{display:none}
+  .module-actions .btn{justify-content:center}
+}
+@media(max-width:560px){
+  .home-actions{flex-direction:column}
+  .features-grid{grid-template-columns:1fr 1fr}
+  .student-form{grid-template-columns:1fr}
+  #topbar{padding:0 16px}
+  #topbar-progress{display:none}
+}
+.module-complete-badge{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;padding:8px 18px;border-radius:99px;font-size:.8rem;font-weight:700;margin-bottom:16px;box-shadow:0 4px 12px rgba(16,185,129,.35)}
+.logos-section{padding:24px 48px;background:#fff;border-top:1px solid var(--border)}
+.logos-section h3{font-size:1rem;font-weight:700;color:var(--text-dark);margin-bottom:6px}
+.logos-section p{font-size:.82rem;color:var(--text-light);margin-bottom:18px}
+.logos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;max-width:600px}
+.logo-upload-box{display:flex;flex-direction:column;gap:8px;align-items:center;text-align:center;background:var(--surface-alt);border:1.5px dashed var(--border);border-radius:var(--radius-sm);padding:14px 10px;transition:border-color .2s}
+.logo-upload-box:hover{border-color:var(--primary)}
+.logo-upload-box label{font-size:.72rem;font-weight:700;color:var(--text-mid);text-transform:uppercase;letter-spacing:.04em}
+.logo-prev{width:100%;height:64px;display:flex;align-items:center;justify-content:center;background:var(--bg);border-radius:var(--radius-xs);overflow:hidden;font-size:.72rem;color:var(--text-muted)}
+.logo-prev img{max-height:60px;max-width:100%;object-fit:contain}
+@media(max-width:900px){.logos-section{padding:24px}}
+</style>
+</head>
+<body>
+<div id="app">
+<aside id="sidebar">
+  <div id="sidebar-logo">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+      <div id="sb-bear-logo" style="flex-shrink:0;width:40px;height:44px;display:flex;align-items:center;justify-content:center">
+      <svg viewBox="0 0 80 90" xmlns="http://www.w3.org/2000/svg" width="40" height="44">
+        <ellipse cx="40" cy="78" rx="28" ry="17" fill="#c41230"/>
+        <ellipse cx="40" cy="63" rx="15" ry="7" fill="#c41230"/>
+        <text x="40" y="83" text-anchor="middle" font-family="cursive" font-size="8" fill="white" font-style="italic">unl</text>
+        <line x1="30" y1="86" x2="50" y2="86" stroke="white" stroke-width="1"/>
+        <circle cx="40" cy="39" r="24" fill="#1a1a1a"/>
+        <circle cx="20" cy="19" r="9" fill="#1a1a1a"/>
+        <circle cx="60" cy="19" r="9" fill="#1a1a1a"/>
+        <ellipse cx="40" cy="47" rx="12" ry="9" fill="#f0dfc8"/>
+        <circle cx="31" cy="34" r="5.5" fill="white"/>
+        <circle cx="49" cy="34" r="5.5" fill="white"/>
+        <circle cx="32" cy="34" r="2.5" fill="#111"/>
+        <circle cx="50" cy="34" r="2.5" fill="#111"/>
+        <rect x="23" y="28" width="15" height="11" rx="3" fill="none" stroke="white" stroke-width="2"/>
+        <rect x="42" y="28" width="15" height="11" rx="3" fill="none" stroke="white" stroke-width="2"/>
+        <line x1="38" y1="33" x2="42" y2="33" stroke="white" stroke-width="1.5"/>
+        <ellipse cx="40" cy="47" rx="3.5" ry="2.5" fill="#2a0f05"/>
+        <path d="M33,52 Q40,58 47,52" stroke="#2a0f05" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <path d="M14,65 Q9,56 12,49 Q15,44 18,47 Q20,41 24,46" fill="#c41230"/>
+        <ellipse cx="17" cy="46" rx="6" ry="8" fill="#1a1a1a"/>
+        <path d="M13,45 L15,35 L19,37 L18,46" fill="#f0dfc8"/>
+      </svg>
+      <div>
+        <div style="font-family:'DM Serif Display',serif;font-size:1.05rem;color:#fff;line-height:1.2">IdeaLab<br>Emprende</div>
+      </div>
+    </div>
+    <div style="background:rgba(196,18,48,.18);border:1px solid rgba(196,18,48,.4);border-radius:6px;padding:6px 10px;display:flex;align-items:center;gap:8px">
+      <svg viewBox="0 0 88 38" xmlns="http://www.w3.org/2000/svg" width="66" height="28">
+        <text x="3" y="30" font-family="'Brush Script MT',cursive" font-size="33" fill="white" font-style="italic" opacity=".9">unl</text>
+        <line x1="3" y1="34" x2="65" y2="34" stroke="white" stroke-width="2" opacity=".65"/>
+        <line x1="70" y1="5" x2="70" y2="36" stroke="white" stroke-width="1.5" opacity=".35"/>
+      </svg>
+      <div style="font-size:.58rem;color:rgba(255,255,255,.5);line-height:1.5">Facultad<br>Jurídica, Social<br>y Administrativa</div>
+    </div>
+    <div class="logo-tagline" style="margin-top:8px">Universidad Nacional de Loja</div>
+  </div>
+  <div id="sidebar-progress">
+    <div class="prog-label">Progreso general</div>
+    <div class="prog-bar-bg"><div class="prog-bar-fill" id="sb-prog-fill"></div></div>
+    <div class="prog-pct" id="sb-prog-pct">0% completado</div>
+  </div>
+  <nav id="sidebar-nav">
+    <div class="nav-section-label">Navegación</div>
+    <div class="nav-item active" data-screen="home" onclick="showScreen('home')">
+      <span class="nav-num">🏠</span><span class="nav-label">Inicio</span>
+    </div>
+    <div class="nav-section-label">Módulos</div>
+  </nav>
+  <div id="sidebar-actions">
+    <button class="sidebar-btn" onclick="showExportModal()">📤 Exportar respuestas</button>
+    <button class="sidebar-btn" onclick="showBiblio()">📚 Bibliografía</button>
+    <button class="sidebar-btn danger" onclick="confirmClear()">🗑️ Borrar avance</button>
+  </div>
+</aside>
+<div id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+<main id="main">
+  <header id="topbar">
+    <button id="menu-toggle" onclick="toggleSidebar()">☰</button>
+    <div id="topbar-title">Inicio</div>
+    <div id="topbar-progress">
+      <div class="topbar-prog-bar"><div class="topbar-prog-fill" id="tb-prog-fill"></div></div>
+      <span id="tb-prog-pct">0%</span>
+    </div>
+  </header>
+
+  <div id="content">
+    <!-- HOME -->
+    <section class="screen active" id="screen-home">
+      <div class="home-hero">
+        <div class="hero-badge">✨ Herramienta académica de emprendimiento</div>
+        <h1>Tu <em>idea de negocio</em> empieza aquí</h1>
+        <p>IdeaLab Emprende te acompaña desde la identificación de una oportunidad hasta la construcción de tu propuesta de valor, con reportes visuales por módulo.</p>
+        <div class="home-actions">
+          <button class="btn btn-primary btn-lg" onclick="startDiagnosis()">🚀 Iniciar diagnóstico</button>
+          <button class="btn btn-secondary" onclick="continueProgress()">▶️ Continuar avance</button>
+          <button class="btn btn-secondary" onclick="generateFinalBusinessPlan()">🏆 Plan de Negocio Final</button>
+          <button class="btn btn-secondary" onclick="showExportModal()">📤 Exportar</button>
+        </div>
+      </div>
+      <div class="home-student">
+        <h3>📋 Datos del estudiante</h3>
+        <p>Ingresa tu información para personalizar los reportes visuales de cada módulo.</p>
+        <div class="student-form">
+          <div class="form-group"><label>Nombre completo</label><input type="text" class="form-control" id="st-nombre" placeholder="Ana Gómez Vera" oninput="saveStudentData()"/></div>
+          <div class="form-group"><label>Carrera</label><input type="text" class="form-control" id="st-carrera" placeholder="Administración de Empresas" oninput="saveStudentData()"/></div>
+          <div class="form-group"><label>Ciclo / Nivel</label><input type="text" class="form-control" id="st-ciclo" placeholder="5to ciclo" oninput="saveStudentData()"/></div>
+          <div class="form-group"><label>Paralelo</label><input type="text" class="form-control" id="st-paralelo" placeholder="A" oninput="saveStudentData()"/></div>
+          <div class="form-group"><label>Correo institucional</label><input type="email" class="form-control" id="st-correo" placeholder="alumno@universidad.edu.ec" oninput="saveStudentData()"/></div>
+          <div class="form-group"><label>Nombre de tu idea</label><input type="text" class="form-control" id="st-idea" placeholder="EcoDelivery Loja" oninput="saveStudentData()"/></div>
+        </div>
+      </div>
+      <!-- LOGOS SECTION -->
+      <div class="logos-section">
+        <h3>🖼️ Logos institucionales</h3>
+        <p>Sube las imágenes para que aparezcan exactamente en el sidebar y en todos los PDFs. Se guardan en tu navegador de forma permanente.</p>
+        <div class="logos-grid">
+          <div class="logo-upload-box">
+            <label>Mascota UNL</label>
+            <div class="logo-prev" id="logo-prev-bear"><span>Sin imagen</span></div>
+            <button class="btn btn-ghost btn-sm" onclick="document.getElementById('inp-bear').click()">📷 Subir</button>
+            <input type="file" id="inp-bear" accept="image/*" style="display:none" onchange="handleLogoUpload('bear',this)">
+          </div>
+          <div class="logo-upload-box">
+            <label>Logo Facultad</label>
+            <div class="logo-prev" id="logo-prev-faculty"><span>Sin imagen</span></div>
+            <button class="btn btn-ghost btn-sm" onclick="document.getElementById('inp-faculty').click()">📷 Subir</button>
+            <input type="file" id="inp-faculty" accept="image/*" style="display:none" onchange="handleLogoUpload('faculty',this)">
+          </div>
+          <div class="logo-upload-box">
+            <label>Logo oficial UNL</label>
+            <div class="logo-prev" id="logo-prev-official"><span>Sin imagen</span></div>
+            <button class="btn btn-ghost btn-sm" onclick="document.getElementById('inp-official').click()">📷 Subir</button>
+            <input type="file" id="inp-official" accept="image/*" style="display:none" onchange="handleLogoUpload('official',this)">
+          </div>
+        </div>
+      </div>
+      <div class="home-features">
+        <h2>Módulos de trabajo</h2>
+        <p class="subtitle">Completa cada módulo y genera reportes visuales con análisis de IA por módulo.</p>
+        <div class="features-grid" id="modules-grid"></div>
+      </div>
+    </section>
+
+    <!-- MODULE -->
+    <section class="screen" id="screen-module">
+      <div class="module-header" id="mod-header">
+        <div class="module-breadcrumb">IdeaLab Emprende › <span id="mod-breadcrumb">Módulo</span></div>
+        <div class="module-tag" id="mod-tag">Emprendimiento</div>
+        <h2 id="mod-title">Título</h2>
+        <div class="module-author" id="mod-author">Referencia</div>
+      </div>
+      <div class="module-body">
+        <div class="alert-banner" id="mod-alert"></div>
+        <div id="mod-content"></div>
+      </div>
+    </section>
+
+    <!-- BIBLIO -->
+    <section class="screen" id="screen-biblio">
+      <div class="module-header" style="background:linear-gradient(135deg,#1e293b,#0f4c75)">
+        <div class="module-breadcrumb">IdeaLab Emprende › <span>Bibliografía</span></div>
+        <h2>📚 Bibliografía académica sugerida</h2>
+        <div class="module-author">Formato APA 7ma edición</div>
+      </div>
+      <div class="module-body">
+        <div class="biblio-card">
+          <h3>📖 Referencias</h3>
+          <div class="biblio-entry">Blank, S. (2013). <em>The four steps to the epiphany</em> (2nd ed.). K&S Ranch.</div>
+          <div class="biblio-entry">Brown, T. (2009). <em>Change by design</em>. HarperBusiness.</div>
+          <div class="biblio-entry">Drucker, P. F. (1985). <em>Innovation and entrepreneurship</em>. Harper & Row.</div>
+          <div class="biblio-entry">Eberle, B. (1996). <em>Scamper: Games for imagination development</em>. Prufrock Press.</div>
+          <div class="biblio-entry">Kelley, T., & Kelley, D. (2013). <em>Creative confidence</em>. Crown Business.</div>
+          <div class="biblio-entry">Kuratko, D. F. (2016). <em>Entrepreneurship</em> (10th ed.). Cengage Learning.</div>
+          <div class="biblio-entry">Maurya, A. (2012). <em>Running lean</em> (2nd ed.). O'Reilly Media.</div>
+          <div class="biblio-entry">Osterwalder, A., & Pigneur, Y. (2010). <em>Business model generation</em>. John Wiley & Sons.</div>
+          <div class="biblio-entry">Osterwalder, A., Pigneur, Y., Bernarda, G., & Smith, A. (2014). <em>Value proposition design</em>. John Wiley & Sons.</div>
+          <div class="biblio-entry">Ries, E. (2011). <em>The lean startup</em>. Crown Business.</div>
+          <div class="biblio-entry">Schumpeter, J. A. (1934). <em>The theory of economic development</em>. Harvard University Press.</div>
+          <div class="biblio-entry">Timmons, J. A., & Spinelli, S. (2009). <em>New venture creation</em> (8th ed.). McGraw-Hill/Irwin.</div>
+        </div>
+        <div style="margin-top:20px"><button class="btn btn-ghost" onclick="showScreen('home')">← Volver</button></div>
+      </div>
+    </section>
+  </div>
+</main>
+</div>
+
+<!-- EXPORT MODAL -->
+<div class="modal-overlay" id="export-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>📤 Exportar respuestas</h3>
+      <button class="modal-close" onclick="hideExportModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="export-option" onclick="exportTxt()">
+        <div class="eo-icon" style="background:#dbeafe">📄</div>
+        <div class="eo-text"><h4>Exportar como .TXT</h4><p>Texto plano con todas las respuestas organizadas</p></div>
+      </div>
+      <div class="export-option" onclick="exportJson()">
+        <div class="eo-icon" style="background:#dcfce7">🗂️</div>
+        <div class="eo-text"><h4>Exportar como .JSON</h4><p>Respaldo técnico de todos tus datos</p></div>
+      </div>
+      <div class="export-option" onclick="exportPrint()">
+        <div class="eo-icon" style="background:#fef3c7">🖨️</div>
+        <div class="eo-text"><h4>Imprimir / Guardar como PDF</h4><p>Abre el diálogo de impresión del navegador</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- REPORT LOADING -->
+<div id="report-loading">
+  <div class="report-loading-card">
+    <div class="report-loading-spinner"></div>
+    <h3>Generando reporte visual</h3>
+    <p>La IA está analizando tus respuestas y construyendo el documento visual del módulo.</p>
+    <div class="report-loading-steps">
+      <div class="rls-step active" id="rls-1"><span class="rls-icon">🔍</span> Analizando respuestas</div>
+      <div class="rls-step" id="rls-2"><span class="rls-icon">🧠</span> Generando insights</div>
+      <div class="rls-step" id="rls-3"><span class="rls-icon">📊</span> Construyendo gráficas</div>
+      <div class="rls-step" id="rls-4"><span class="rls-icon">📄</span> Finalizando documento</div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ================================================================
+   MÓDULOS
+   ================================================================ */
+const MODULES = [
+  { id:'mod1', num:1, title:'Exploración personal', icon:'🌱', tag:'Autoconocimiento',
+    author:'Basado en Kuratko (2016) y Timmons & Spinelli (2009)',
+    theory:'El punto de partida de cualquier emprendimiento exitoso es el propio emprendedor. Kuratko (2016) señala que la conciencia de las propias fortalezas, habilidades e intereses es fundamental para identificar oportunidades coherentes con el perfil personal. Sin autoconocimiento, es difícil comprometerse con un proyecto a largo plazo.',
+    cite:'Kuratko, D. F. (2016). Entrepreneurship (10th ed.). Cengage Learning.',
+    color:'#2563eb',
+    questions:[
+      {id:'q1_intereses',label:'Intereses',text:'¿Cuáles son tus principales intereses, pasiones o áreas que te generan entusiasmo en la vida personal y profesional?',hint:'Piensa en actividades en las que el tiempo pasa rápido.'},
+      {id:'q1_habilidades',label:'Habilidades',text:'¿Qué habilidades, conocimientos o destrezas has desarrollado que podrían ser valiosos para un negocio?',hint:'Considera habilidades técnicas, blandas y experiencias prácticas.'},
+      {id:'q1_problemas',label:'Problemas observados',text:'¿Qué problemas, frustraciones o necesidades no cubiertas observas en tu entorno?',hint:'Los problemas son oportunidades disfrazadas. Sé específico.'},
+      {id:'q1_recursos',label:'Recursos disponibles',text:'¿Con qué recursos personales, económicos, tecnológicos o relacionales cuentas actualmente?',hint:'Incluye contactos, equipos, espacios, tiempo, ahorros, redes.'},
+      {id:'q1_motivacion',label:'Motivación emprendedora',text:'¿Por qué deseas emprender? ¿Cuál es tu motivación profunda?',hint:'Distingue motivaciones externas (ingresos) e internas (propósito, libertad).'}
+    ]},
+  { id:'mod2', num:2, title:'Identificación de oportunidades', icon:'🔍', tag:'Innovación',
+    author:'Basado en Drucker (1985) y Schumpeter (1934)',
+    theory:'Para Drucker (1985), la innovación sistemática comienza con la búsqueda deliberada de oportunidades en cambios del entorno y necesidades no satisfechas. Schumpeter introduce el concepto de "destrucción creativa": las oportunidades surgen cuando nuevas soluciones desplazan a las viejas.',
+    cite:'Drucker, P. F. (1985). Innovation and entrepreneurship. Harper & Row.',
+    color:'#0891b2',
+    questions:[
+      {id:'q2_cliente',label:'Problemas del cliente',text:'¿Qué problema concreto tiene un grupo de personas que estás dispuesto a resolver?',hint:'Un problema bien definido es la mitad de la solución.'},
+      {id:'q2_necesidades',label:'Necesidades no satisfechas',text:'¿Qué necesidades del mercado no están siendo bien atendidas actualmente?',hint:'Busca brechas entre lo que la gente necesita y lo que el mercado ofrece.'},
+      {id:'q2_tendencias',label:'Tendencias del entorno',text:'¿Qué tendencias tecnológicas, sociales o económicas están generando nuevas necesidades?',hint:'Digitalización, sostenibilidad, urbanización, etc.'},
+      {id:'q2_local',label:'Oportunidades locales',text:'¿Qué oportunidades específicas identificas en tu ciudad o sector que aún no han sido aprovechadas?',hint:'Lo local tiene ventajas competitivas únicas.'}
+    ]},
+  { id:'mod3', num:3, title:'Mapa de empatía', icon:'🧠', tag:'Design Thinking',
+    author:'Basado en Osterwalder et al. (2014)',
+    theory:'El mapa de empatía permite profundizar en la comprensión del cliente objetivo. Busca ir más allá de los datos demográficos para entender qué siente, piensa, ve, escucha, dice y hace el cliente real. Conocer sus "dolores" y "ganancias" es esencial para propuestas relevantes.',
+    cite:'Osterwalder, A., Pigneur, Y., Bernarda, G., & Smith, A. (2014). Value proposition design. John Wiley & Sons.',
+    color:'#7c3aed',
+    questions:[
+      {id:'q3_piensa',label:'Piensa y siente',text:'¿Qué piensa y siente tu cliente objetivo respecto al problema identificado?',hint:'Aspiraciones, miedos, preocupaciones profundas.'},
+      {id:'q3_ve',label:'Ve',text:'¿Qué ve tu cliente en su entorno cotidiano?',hint:'Ambiente visual del cliente: productos, publicidad, modelos de referencia.'},
+      {id:'q3_escucha',label:'Escucha',text:'¿Qué escucha tu cliente? ¿Qué dicen sus amigos, familia o redes sociales?',hint:'¿Quiénes son sus influenciadores?'},
+      {id:'q3_dice',label:'Dice y hace',text:'¿Qué dice y hace tu cliente en relación al problema?',hint:'Hay diferencia entre lo que se dice y lo que se hace.'},
+      {id:'q3_dolores',label:'Dolores (Pains)',text:'¿Cuáles son los principales dolores, frustraciones u obstáculos que enfrenta tu cliente?',hint:'Los dolores son el motor de la urgencia.'},
+      {id:'q3_ganancias',label:'Ganancias (Gains)',text:'¿Qué ganancias o beneficios desea alcanzar tu cliente?',hint:'Incluye beneficios funcionales, emocionales y sociales.'}
+    ]},
+  { id:'mod4', num:4, title:'Design Thinking', icon:'🎨', tag:'Metodología',
+    author:'Basado en Brown (2009), IDEO y Kelley & Kelley (2013)',
+    theory:'El Design Thinking es una metodología centrada en el ser humano. Tim Brown lo define como un enfoque que integra empatía, definición, ideación, prototipado y prueba en un proceso iterativo. Su valor radica en poner al usuario en el centro de toda decisión de diseño.',
+    cite:'Brown, T. (2009). Change by design. HarperBusiness.',
+    color:'#dc2626',
+    questions:[
+      {id:'q4_empatizar',label:'Empatizar',text:'¿Qué has observado o investigado para comprender profundamente al usuario?',hint:'Entrevistas, observación, encuestas, experiencia propia.'},
+      {id:'q4_definir',label:'Definir',text:'Formula un "punto de vista" del usuario: [Usuario] necesita [necesidad] porque [insight].',hint:'Ej: Los estudiantes necesitan alimentos nutritivos rápidos porque no tienen tiempo para cocinar.'},
+      {id:'q4_idear',label:'Idear',text:'¿Cuáles son las tres ideas más prometedoras para resolver el problema?',hint:'En la ideación no hay malas ideas.'},
+      {id:'q4_prototipar',label:'Prototipar',text:'¿Cómo describirías un prototipo básico de tu solución?',hint:'Puede ser un boceto, mockup, formulario o demostración sencilla.'},
+      {id:'q4_testear',label:'Testear',text:'¿Cómo planeas probar tu prototipo con usuarios reales?',hint:'Define quiénes serán los primeros usuarios y qué aprenderás.'}
+    ]},
+  { id:'mod5', num:5, title:'Herramienta SCAMPER', icon:'⚡', tag:'Creatividad',
+    author:'Basado en Eberle (1996)',
+    theory:'SCAMPER propone que toda innovación parte de algo existente que puede ser transformado: Sustituir, Combinar, Adaptar, Modificar, Proponer otros usos, Eliminar y Reordenar. Aplicar SCAMPER permite generar múltiples variaciones creativas de manera estructurada.',
+    cite:'Eberle, B. (1996). Scamper. Prufrock Press.',
+    color:'#d97706',
+    questions:[
+      {id:'q5_sustituir',label:'S — Sustituir',text:'¿Qué componente, material o proceso podrías sustituir para mejorar o diferenciar tu idea?',hint:'Ej: tienda física → plataforma digital.'},
+      {id:'q5_combinar',label:'C — Combinar',text:'¿Qué elementos de diferentes industrias podrías combinar para crear algo nuevo?',hint:'Las mejores innovaciones combinan ideas de sectores distintos.'},
+      {id:'q5_adaptar',label:'A — Adaptar',text:'¿Qué modelos de negocio exitosos podrías adaptar a tu contexto local?',hint:'Muchos negocios son adaptaciones de modelos que funcionan en otros contextos.'},
+      {id:'q5_modificar',label:'M — Modificar',text:'¿Qué aspectos podrías magnificar, reducir o modificar para hacer tu idea más atractiva?',hint:'Escala, velocidad, precio, tamaño, características.'},
+      {id:'q5_usos',label:'P — Proponer otros usos',text:'¿Tu producto podría tener usos alternativos o llegar a segmentos distintos?',hint:'Muchos productos exitosos tienen usos inesperados.'},
+      {id:'q5_eliminar',label:'E — Eliminar',text:'¿Qué características o complejidades podrías eliminar sin afectar el valor central?',hint:'La simplicidad es una ventaja competitiva.'},
+      {id:'q5_reordenar',label:'R — Reordenar',text:'¿Cómo podrías reorganizar el proceso o la estructura para mejorar la experiencia del cliente?',hint:'Cambiar el orden puede transformar radicalmente la experiencia.'}
+    ]},
+  { id:'mod6', num:6, title:'Propuesta de valor', icon:'💎', tag:'Estrategia',
+    author:'Basado en Osterwalder, Pigneur, Bernarda & Smith (2014)',
+    theory:'La propuesta de valor describe cómo un producto o servicio crea valor para un segmento específico. Requiere comprender los "trabajos del cliente", sus dolores y sus ganancias, respondiendo con aliviadores de dolores y creadores de ganancias concretos.',
+    cite:'Osterwalder, A., Pigneur, Y., Bernarda, G., & Smith, A. (2014). Value proposition design. John Wiley & Sons.',
+    color:'#059669',
+    questions:[
+      {id:'q6_segmento',label:'Segmento de clientes',text:'¿A qué grupo específico de personas está dirigida tu propuesta?',hint:'Cuanto más específico sea tu segmento, mejor.'},
+      {id:'q6_problema',label:'Problema principal',text:'¿Cuál es el problema más crítico que tu solución resuelve para ese segmento?',hint:'Desde la perspectiva del cliente.'},
+      {id:'q6_producto',label:'Producto o servicio',text:'¿Qué ofreces exactamente? Describe tu solución clara y concisamente.',hint:'¿Qué hace? ¿Cómo funciona? ¿Cuál es su formato?'},
+      {id:'q6_beneficios',label:'Beneficios clave',text:'¿Qué beneficios funcionales, económicos o emocionales obtiene el cliente?',hint:'Los beneficios son el resultado que experimenta el cliente.'},
+      {id:'q6_diferenciador',label:'Diferenciador competitivo',text:'¿Qué hace única tu propuesta frente a las alternativas existentes?',hint:'Precio, experiencia, velocidad, personalización, modelo de entrega.'},
+      {id:'q6_aliviadores',label:'Aliviadores de dolores',text:'¿Cómo elimina o reduce tu propuesta los dolores del cliente?',hint:'Conecta directamente los dolores del mapa de empatía.'},
+      {id:'q6_creadores',label:'Creadores de ganancias',text:'¿Cómo genera tu propuesta los beneficios adicionales que el cliente espera?',hint:'Los creadores van más allá de lo esperado.'}
+    ]},
+  { id:'mod7', num:7, title:'Lean Startup', icon:'🔄', tag:'Validación',
+    author:'Basado en Ries (2011) y Blank (2013)',
+    theory:'La metodología Lean Startup busca reducir el desperdicio mediante ciclos rápidos de aprendizaje. Su núcleo es el ciclo Construir-Medir-Aprender. Steve Blank complementa con el "desarrollo de clientes": la validación debe comenzar antes de construir el producto.',
+    cite:'Ries, E. (2011). The lean startup. Crown Business.',
+    color:'#0ea5e9',
+    questions:[
+      {id:'q7_hipotesis_p',label:'Hipótesis del problema',text:'"Creemos que [segmento] tiene el problema de [descripción del problema]."',hint:'Una hipótesis es una suposición que necesita ser validada.'},
+      {id:'q7_hipotesis_s',label:'Hipótesis de solución',text:'"Creemos que [solución] resolverá el problema porque [razón]."',hint:'Tu solución es una hipótesis hasta que la validen clientes reales.'},
+      {id:'q7_supuestos',label:'Supuestos críticos',text:'¿Cuáles son los 3 supuestos más importantes que deben ser verdaderos para que tu negocio funcione?',hint:'Si un supuesto es falso, el negocio fracasa.'},
+      {id:'q7_experimentos',label:'Experimentos de validación',text:'¿Qué experimentos rápidos y económicos puedes realizar para validar tus hipótesis?',hint:'Encuesta, entrevista, landing page, prueba de venta, prototipo.'},
+      {id:'q7_aprendizaje',label:'Aprendizaje validado',text:'¿Qué has aprendido hasta ahora sobre tu cliente, el problema y tu solución?',hint:'Conocimiento obtenido de evidencia real, no suposiciones.'},
+      {id:'q7_ciclo',label:'Ciclo Construir-Medir-Aprender',text:'¿Cómo aplicarás el ciclo en tu emprendimiento? ¿Qué construirás primero?',hint:'Describe el primer experimento, cómo lo medirás y cuándo lo harás.'}
+    ]},
+  { id:'mod8', num:8, title:'Producto Mínimo Viable', icon:'🛠️', tag:'MVP',
+    author:'Basado en Ries (2011) y Maurya (2012)',
+    theory:'El MVP es la versión más básica de un producto que permite obtener el máximo aprendizaje con el mínimo esfuerzo. Maurya sugiere que el MVP no es el producto más pequeño posible, sino el más pequeño que genera aprendizaje real sobre la viabilidad del negocio.',
+    cite:'Ries, E. (2011). The lean startup. Crown Business. / Maurya, A. (2012). Running lean. O\'Reilly Media.',
+    color:'#ea580c',
+    questions:[
+      {id:'q8_descripcion',label:'Descripción del MVP',text:'¿Cómo sería la versión más básica que podrías lanzar de tu idea?',hint:'No tiene que ser perfecto, solo suficiente para probar la hipótesis.'},
+      {id:'q8_funcion',label:'Función principal',text:'¿Cuál es la característica central que tu MVP debe tener obligatoriamente?',hint:'Identifica el núcleo de tu propuesta de valor.'},
+      {id:'q8_recursos',label:'Recursos mínimos',text:'¿Qué recursos mínimos necesitas para construir y lanzar tu MVP?',hint:'Tiempo, dinero, herramientas, personas.'},
+      {id:'q8_prueba',label:'Forma de prueba',text:'¿Cómo probarás tu MVP con clientes reales? ¿Quiénes serán tus primeros usuarios?',hint:'Los primeros clientes son los más valiosos.'},
+      {id:'q8_indicadores',label:'Indicadores de validación',text:'¿Qué métricas te dirán si tu MVP está funcionando?',hint:'Número de usuarios, retención, disposición a pagar, NPS.'}
+    ]},
+  { id:'mod9', num:9, title:'Lienzo Canvas', icon:'🗺️', tag:'Modelo de Negocio',
+    author:'Basado en Osterwalder & Pigneur (2010)',
+    theory:'El Business Model Canvas describe en nueve bloques cómo una organización crea, entrega y captura valor. Su visualización en una sola página facilita la discusión, el análisis y la iteración del modelo de negocio.',
+    cite:'Osterwalder, A., & Pigneur, Y. (2010). Business model generation. John Wiley & Sons.',
+    color:'#7c3aed',
+    questions:[
+      {id:'q9_segmentos',label:'1. Segmentos de clientes',text:'¿A qué grupos de clientes sirve tu negocio?',hint:'B2C, B2B o ambos.'},
+      {id:'q9_propuesta',label:'2. Propuesta de valor',text:'¿Qué valor único ofreces a cada segmento?',hint:'Usa lo del módulo 6 como base.'},
+      {id:'q9_canales',label:'3. Canales',text:'¿Cómo llegas a tus clientes para comunicar, distribuir y vender?',hint:'Digitales, físicos o mixtos.'},
+      {id:'q9_relaciones',label:'4. Relación con clientes',text:'¿Qué tipo de relación estableces con cada segmento?',hint:'Personal, automatizada, autoservicio, comunitaria.'},
+      {id:'q9_ingresos',label:'5. Fuentes de ingresos',text:'¿Cómo genera dinero tu negocio?',hint:'Venta, suscripción, comisiones, freemium, publicidad.'},
+      {id:'q9_recursos',label:'6. Recursos clave',text:'¿Qué activos esenciales necesita tu modelo de negocio?',hint:'Físicos, intelectuales, humanos, financieros.'},
+      {id:'q9_actividades',label:'7. Actividades clave',text:'¿Qué actividades principales debe realizar tu empresa?',hint:'Producción, plataformas, resolución de problemas.'},
+      {id:'q9_socios',label:'8. Socios clave',text:'¿Qué alianzas o proveedores estratégicos son esenciales?',hint:'Las alianzas reducen riesgos y amplían canales.'},
+      {id:'q9_costos',label:'9. Estructura de costos',text:'¿Cuáles son los costos más importantes de tu modelo?',hint:'Costos fijos y variables más relevantes.'}
+    ]},
+  { id:'mod10', num:10, title:'Pitch Elevator', icon:'🎤', tag:'Comunicación',
+    author:'Basado en principios de comunicación de emprendimiento',
+    theory:'El Pitch Elevator es una presentación breve (60-120 s) y persuasiva de una idea de negocio. Un buen pitch comunica el problema, la solución, el mercado objetivo, el diferenciador, el modelo de ingresos y el impacto esperado de manera memorable.',
+    cite:'Kuratko, D. F. (2016). Entrepreneurship (10th ed.). Cengage Learning.',
+    color:'#e11d48',
+    questions:[
+      {id:'q10_problema',label:'El problema',text:'¿Cuál es el problema que resuelves, expresado para que cualquiera lo entienda en 2-3 segundos?',hint:'Estadística, anécdota o pregunta retórica.'},
+      {id:'q10_solucion',label:'La solución',text:'¿Cómo describes tu solución de manera simple y memorable?',hint:'Tan clara que el oyente pueda explicársela a otra persona.'},
+      {id:'q10_cliente',label:'El cliente',text:'¿A quién va dirigido tu negocio? Descríbelo con datos concretos.',hint:'"Jóvenes de 18 a 28 años en ciudades medianas de Ecuador..."'},
+      {id:'q10_diferenciador',label:'El diferenciador',text:'¿Qué te hace diferente a las alternativas existentes?',hint:'Tu ventaja competitiva en una sola oración poderosa.'},
+      {id:'q10_ingresos',label:'Modelo de ingresos',text:'¿Cómo genera dinero tu negocio? En una frase directa.',hint:'"Ganamos dinero cuando..."'},
+      {id:'q10_impacto',label:'Impacto esperado',text:'¿Cuál es el impacto social, económico o ambiental si tu negocio escala?',hint:'Cuantifícalo si es posible.'},
+      {id:'q10_cta',label:'Llamado a la acción',text:'¿Qué le estás pidiendo exactamente al interlocutor?',hint:'Inversión, alianza, mentoría, clientes piloto, retroalimentación.'}
+    ]},
+  { id:'mod11', num:11, title:'Plan básico de negocio', icon:'📋', tag:'Planificación',
+    author:'Basado en Kuratko (2016) y Timmons & Spinelli (2009)',
+    theory:'El plan de negocio traduce una idea en un proyecto estructurado con viabilidad demostrada. Es una hoja de ruta que articula la visión del emprendedor con los recursos, el mercado, la estrategia y las finanzas. No es estático: debe actualizarse conforme el negocio evoluciona.',
+    cite:'Kuratko, D. F. (2016). Entrepreneurship (10th ed.). Cengage Learning. / Timmons, J. A., & Spinelli, S. (2009). New venture creation (8th ed.). McGraw-Hill/Irwin.',
+    color:'#0f766e',
+    questions:[
+      {id:'q11_resumen',label:'Resumen ejecutivo',text:'Resume en 5-8 oraciones tu idea de negocio, el problema, el mercado y su potencial.',hint:'Se escribe al final pero se lee primero.'},
+      {id:'q11_descripcion',label:'Descripción del negocio',text:'¿Cuál es la misión, visión y descripción detallada de tu negocio?',hint:'Nombre, tipo de empresa, ubicación, modelo de operación, valores.'},
+      {id:'q11_mercado',label:'Análisis del mercado',text:'¿Cuál es el tamaño de tu mercado objetivo? ¿Quiénes son tus competidores?',hint:'Mercado total, accesible y objetivo inicial.'},
+      {id:'q11_marketing',label:'Estrategia de marketing',text:'¿Cómo atraerás clientes? ¿Qué mix de marketing usarás?',hint:'Canales, precio, distribución, promoción.'},
+      {id:'q11_operaciones',label:'Operaciones',text:'¿Cómo funcionará operativamente tu negocio día a día?',hint:'Proceso de producción, proveedores, logística.'},
+      {id:'q11_recursos',label:'Recursos necesarios',text:'¿Qué recursos necesitas para lanzar y operar en los primeros meses?',hint:'¿Qué ya tienes y qué necesitas conseguir?'},
+      {id:'q11_finanzas',label:'Costos e ingresos estimados',text:'¿Cuáles son tus costos de inicio, operativos y proyecciones de ingresos a 6 meses?',hint:'Debe ser realista. Muestra viabilidad financiera básica.'},
+      {id:'q11_riesgos',label:'Análisis de riesgos',text:'¿Cuáles son los 3 principales riesgos y cómo planeas mitigarlos?',hint:'Riesgos de mercado, tecnológicos, financieros, regulatorios.'},
+      {id:'q11_conclusion',label:'Próximos pasos',text:'¿Cuáles son los 5 pasos concretos para avanzar en tu idea de negocio?',hint:'"En los próximos 30 días voy a..." es un buen formato.'}
+    ]}
+];
+
+/* ================================================================
+   STATE
+   ================================================================ */
+const STORAGE_KEY = 'idealab_data_v1';
+let currentScreen = 'home';
+let currentModuleIdx = 0;
+
+function getState() {
+  try { const r = localStorage.getItem(STORAGE_KEY); if (r) return JSON.parse(r); } catch(e){}
+  return { student:{}, answers:{}, completed:{} };
+}
+function saveState(s) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); } catch(e){ showToast('⚠️ Error al guardar'); }
+}
+
+/* ================================================================
+   INIT
+   ================================================================ */
+function init() {
+  buildSidebarNav();
+  buildModulesGrid();
+  loadStudentData();
+  loadLogos();
+  updateProgress();
+}
+
+function buildSidebarNav() {
+  const nav = document.getElementById('sidebar-nav');
+  const base = nav.innerHTML;
+  const frag = MODULES.map((m,i) => `
+    <div class="nav-item" id="nav-mod-${i}" onclick="openModule(${i})">
+      <span class="nav-num">${m.num}</span>
+      <span class="nav-label">${m.title}</span>
+      <span class="nav-check">✓</span>
+    </div>`).join('');
+  nav.innerHTML = base + frag;
+}
+
+function buildModulesGrid() {
+  const grid = document.getElementById('modules-grid');
+  const state = getState();
+  grid.innerHTML = MODULES.map((m,i) => {
+    const done = state.completed[m.id];
+    return `<div class="feature-card${done?' completed-card':''}" onclick="openModule(${i})">
+      <div class="fc-icon">${done?'✅':m.icon}</div>
+      <div class="fc-num">Módulo ${m.num}</div>
+      <div class="fc-title">${m.title}</div>
+      <div class="fc-status">${done?'✓ Completado':'Pendiente'}</div>
+    </div>`;
+  }).join('');
+}
+
+/* ================================================================
+   NAVIGATION
+   ================================================================ */
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(`screen-${name}`).classList.add('active');
+  currentScreen = name;
+  const titles = { home:'Inicio', module:`Módulo ${MODULES[currentModuleIdx]?.num}: ${MODULES[currentModuleIdx]?.title}`, biblio:'Bibliografía' };
+  document.getElementById('topbar-title').textContent = titles[name] || name;
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  if (name === 'home') document.querySelector('[data-screen="home"]')?.classList.add('active');
+  else if (name === 'module') document.getElementById(`nav-mod-${currentModuleIdx}`)?.classList.add('active');
+  window.scrollTo(0,0);
+  closeSidebar();
+}
+
+function openModule(idx) { currentModuleIdx = idx; renderModule(idx); showScreen('module'); }
+function showBiblio() { showScreen('biblio'); }
+function startDiagnosis() { openModule(0); }
+function continueProgress() {
+  const s = getState();
+  for (let i = 0; i < MODULES.length; i++) { if (!s.completed[MODULES[i].id]) { openModule(i); return; } }
+  openModule(MODULES.length - 1);
+}
+
+/* ================================================================
+   RENDER MODULE
+   ================================================================ */
+function renderModule(idx) {
+  const m = MODULES[idx];
+  const state = getState();
+  document.getElementById('mod-breadcrumb').textContent = `Módulo ${m.num}: ${m.title}`;
+  document.getElementById('mod-tag').textContent = m.tag;
+  document.getElementById('mod-title').textContent = `${m.icon} ${m.title}`;
+  document.getElementById('mod-author').textContent = m.author;
+  document.getElementById('mod-alert').className = 'alert-banner';
+
+  const done = state.completed[m.id];
+  const badge = done ? `<div class="module-complete-badge">✅ Módulo completado</div>` : '';
+
+  const theory = `<div class="theory-card">
+    <div class="theory-label">📖 Marco teórico</div>
+    <p>${m.theory}</p>
+    <div class="theory-cite">📚 ${m.cite}</div>
+  </div>`;
+
+  const questions = m.questions.map((q,qi) => {
+    const saved = (state.answers[m.id]&&state.answers[m.id][q.id]) || '';
+    return `<div class="question-block" id="qblock-${q.id}">
+      <div class="question-label"><span style="color:${m.color};font-family:var(--font-mono)">${String(qi+1).padStart(2,'0')}</span> ${q.label}</div>
+      <div class="question-text">${q.text}</div>
+      <div class="question-hint">💡 ${q.hint}</div>
+      <textarea class="answer-textarea" id="ans-${q.id}" placeholder="Escribe tu respuesta detallada..." oninput="handleAnswerInput('${m.id}','${q.id}',this)" rows="4">${saved}</textarea>
+      <div class="char-counter ${saved.length<30?'low':'ok'}" id="cc-${q.id}">${saved.length} caracteres</div>
+      <div class="feedback-msg" id="fb-${q.id}"></div>
+    </div>`;
+  }).join('');
+
+  const totalQ = m.questions.length;
+  const answeredQ = m.questions.filter(q => { const a = state.answers[m.id]&&state.answers[m.id][q.id]; return a&&a.trim().length>=30; }).length;
+  const pct = Math.round((answeredQ/totalQ)*100);
+
+  const dots = `<div class="step-dots">${m.questions.map((q,qi) => {
+    const a = state.answers[m.id]&&state.answers[m.id][q.id];
+    return `<div class="step-dot ${a&&a.trim().length>=30?'done':''}" title="${q.label}" onclick="document.getElementById('qblock-${q.id}').scrollIntoView({behavior:'smooth'})"></div>`;
+  }).join('')}</div>`;
+
+  const tracker = `<div class="progress-tracker">
+    <div class="pt-bar">
+      <div class="pt-label">Progreso en este módulo</div>
+      <div class="pt-track"><div class="pt-fill" style="width:${pct}%"></div></div>
+    </div>
+    <div class="pt-pct">${pct}%</div>
+    <div class="pt-modules">${answeredQ}/${totalQ} preguntas</div>
+    ${dots}
+  </div>`;
+
+  const prevBtn = idx>0 ? `<button class="btn btn-ghost" onclick="openModule(${idx-1})">← Anterior</button>` : '';
+  const nextBtn = idx<MODULES.length-1
+    ? `<button class="btn btn-primary" onclick="saveModuleAndNext(${idx})">Guardar y continuar →</button>`
+    : `<button class="btn btn-success" onclick="saveModule(${idx})">✅ Finalizar y guardar</button>`;
+
+  const actions = `<div class="module-actions">
+    ${prevBtn}
+    <div class="spacer"></div>
+    <button class="btn btn-ghost btn-sm" onclick="showScreen('home')">🏠 Inicio</button>
+    <button class="btn btn-outline" onclick="saveModule(${idx})">💾 Guardar</button>
+    <button class="btn btn-ghost" onclick="downloadModulePDF(${idx})">📥 PDF del módulo</button>
+    <button class="btn btn-report" onclick="generateVisualReport(${idx})">📋 Resultado del Módulo</button>
+    ${idx === MODULES.length - 1 ? `<button class="btn btn-success" onclick="generateFinalBusinessPlan()" style="background:linear-gradient(135deg,#7c3aed,#c41230)">🚀 Plan de Negocio Final</button>` : ''}
+    ${nextBtn}
+  </div>`;
+
+  document.getElementById('mod-content').innerHTML = badge + theory + questions + tracker + actions;
+  updateProgress();
+}
+
+/* ================================================================
+   ANSWER HANDLING
+   ================================================================ */
+function handleAnswerInput(modId, qId, ta) {
+  const val = ta.value, len = val.length;
+  const cc = document.getElementById(`cc-${qId}`);
+  if (cc) { cc.textContent = `${len} caracteres`; cc.className = `char-counter ${len<30?'low':'ok'}`; }
+  const fb = document.getElementById(`fb-${qId}`);
+  if (fb) {
+    if (!len) { fb.className = 'feedback-msg'; }
+    else if (len<30) { fb.className = 'feedback-msg warn show'; fb.textContent = '⚠️ Amplía tu respuesta para mejor evaluación.'; }
+    else if (len<80) { fb.className = 'feedback-msg info show'; fb.textContent = 'ℹ️ Bien. Considera agregar más contexto o ejemplos.'; }
+    else { fb.className = 'feedback-msg good show'; fb.textContent = '✅ Respuesta completa.'; }
+  }
+  const state = getState();
+  if (!state.answers[modId]) state.answers[modId] = {};
+  state.answers[modId][qId] = val;
+  saveState(state);
+  updateModuleProgressDots();
+}
+
+function updateModuleProgressDots() {
+  const m = MODULES[currentModuleIdx];
+  if (!m) return;
+  const state = getState();
+  const dots = document.querySelectorAll('.step-dot');
+  m.questions.forEach((q,qi) => {
+    if (!dots[qi]) return;
+    const a = state.answers[m.id]&&state.answers[m.id][q.id];
+    dots[qi].className = `step-dot ${a&&a.trim().length>=30?'done':''}`;
+  });
+  const totalQ = m.questions.length;
+  const answeredQ = m.questions.filter(q => { const a = state.answers[m.id]&&state.answers[m.id][q.id]; return a&&a.trim().length>=30; }).length;
+  const pct = Math.round((answeredQ/totalQ)*100);
+  const fill = document.querySelector('.pt-fill'); if (fill) fill.style.width = pct+'%';
+  const pp = document.querySelector('.pt-pct'); if (pp) pp.textContent = pct+'%';
+  const pm = document.querySelector('.pt-modules'); if (pm) pm.textContent = `${answeredQ}/${totalQ} preguntas`;
+}
+
+/* ================================================================
+   SAVE MODULE
+   ================================================================ */
+function saveModule(idx) {
+  const m = MODULES[idx];
+  const state = getState();
+  const answeredQ = m.questions.filter(q => { const a = state.answers[m.id]&&state.answers[m.id][q.id]; return a&&a.trim().length>=30; }).length;
+  if (answeredQ/m.questions.length >= 0.6) {
+    state.completed[m.id] = true; saveState(state);
+    showModuleAlert('success','✅ Módulo guardado como completado. ¡Buen trabajo!');
+    updateProgress(); updateNavCompletion(); buildModulesGrid();
+  } else {
+    saveState(state);
+    showModuleAlert('error','💾 Avance guardado. Para completar el módulo, responde al menos el 60% con más de 30 caracteres.');
+  }
+  showToast('💾 Guardado correctamente');
+}
+
+function saveModuleAndNext(idx) { saveModule(idx); setTimeout(() => openModule(idx+1), 400); }
+
+function showModuleAlert(type, msg) {
+  const a = document.getElementById('mod-alert');
+  a.className = `alert-banner ${type} show`; a.textContent = msg;
+  a.scrollIntoView({behavior:'smooth',block:'nearest'});
+  setTimeout(() => a.classList.remove('show'), 5000);
+}
+
+/* ================================================================
+   PROGRESS
+   ================================================================ */
+function updateProgress() {
+  const state = getState();
+  const completed = Object.values(state.completed).filter(Boolean).length;
+  const pct = Math.round((completed/MODULES.length)*100);
+  document.getElementById('sb-prog-fill').style.width = pct+'%';
+  document.getElementById('sb-prog-pct').textContent = `${pct}% completado`;
+  document.getElementById('tb-prog-fill').style.width = pct+'%';
+  document.getElementById('tb-prog-pct').textContent = pct+'%';
+  updateNavCompletion();
+}
+
+function updateNavCompletion() {
+  const state = getState();
+  MODULES.forEach((m,i) => {
+    const n = document.getElementById(`nav-mod-${i}`);
+    if (n) n.classList.toggle('completed', !!state.completed[m.id]);
+  });
+}
+
+/* ================================================================
+   LOGOS INSTITUCIONALES
+   ================================================================ */
+const LOGOS_KEY = 'idealab_logos_v1';
+
+function getLogos() {
+  try { return JSON.parse(localStorage.getItem(LOGOS_KEY) || '{}'); } catch(e) { return {}; }
+}
+
+function handleLogoUpload(key, input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const maxW = key === 'official' ? 320 : 240;
+      const maxH = key === 'bear' ? 260 : 180;
+      const ratio = Math.min(1, maxW / img.width, maxH / img.height);
+      canvas.width = Math.round(img.width * ratio);
+      canvas.height = Math.round(img.height * ratio);
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      const b64 = canvas.toDataURL('image/png', 0.9);
+      const logos = getLogos();
+      logos[key] = b64;
+      try { localStorage.setItem(LOGOS_KEY, JSON.stringify(logos)); } catch(e) { showToast('⚠️ Imagen muy grande, intenta con una más pequeña'); return; }
+      updateLogoPreviews();
+      updateSidebarLogoDisplay();
+      showToast('✅ Logo guardado correctamente');
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function updateLogoPreviews() {
+  const logos = getLogos();
+  ['bear','faculty','official'].forEach(key => {
+    const el = document.getElementById(`logo-prev-${key}`);
+    if (!el) return;
+    el.innerHTML = logos[key]
+      ? `<img src="${logos[key]}" style="max-height:60px;max-width:100%;object-fit:contain">`
+      : `<span>Sin imagen</span>`;
+  });
+}
+
+function updateSidebarLogoDisplay() {
+  const logos = getLogos();
+  const el = document.getElementById('sb-bear-logo');
+  if (!el) return;
+  el.innerHTML = logos.bear
+    ? `<img src="${logos.bear}" style="width:40px;height:44px;object-fit:contain;filter:drop-shadow(0 2px 4px rgba(0,0,0,.3))">`
+    : el.innerHTML; // keep existing SVG
+}
+
+function loadLogos() {
+  updateLogoPreviews();
+  updateSidebarLogoDisplay();
+}
+
+/* ================================================================
+   STUDENT DATA
+   ================================================================ */
+function saveStudentData() {
+  const state = getState();
+  state.student = {
+    nombre: document.getElementById('st-nombre').value,
+    carrera: document.getElementById('st-carrera').value,
+    ciclo: document.getElementById('st-ciclo').value,
+    paralelo: document.getElementById('st-paralelo').value,
+    correo: document.getElementById('st-correo').value,
+    idea: document.getElementById('st-idea').value,
+    fecha: new Date().toLocaleDateString('es-EC')
+  };
+  saveState(state);
+}
+
+function loadStudentData() {
+  const s = getState().student || {};
+  ['nombre','carrera','ciclo','paralelo','correo','idea'].forEach(f => {
+    const el = document.getElementById(`st-${f}`);
+    if (el && s[f]) el.value = s[f];
+  });
+}
+
+/* ================================================================
+   MODULE RESULT CONFIGURATIONS
+   ================================================================ */
+const MODULE_RESULTS = {
+  mod1: {
+    docTitle:'Perfil Emprendedor',icon:'🎯',color:'#2563eb',
+    objetivo:'Determinar el nivel de preparación para emprender y el tipo de negocio más adecuado para el perfil del estudiante.',
+    instruccion:`Genera un PERFIL EMPRENDEDOR completo con estas secciones:
+1. ÍNDICE DE PREPARACIÓN EMPRENDEDORA (0-100) con justificación clara
+2. TIPO DE EMPRENDEDOR que es el estudiante: Innovador / Ejecutor / Social-Impacto / Técnico-Experto / Comercial
+3. 3 FORTALEZAS MÁS VALIOSAS para emprender, explicadas
+4. 3 ÁREAS DE DESARROLLO críticas antes o durante el emprendimiento
+5. TIPO DE NEGOCIO RECOMENDADO según su perfil y por qué
+6. 2-3 IDEAS DE NEGOCIO CONCRETAS que surgen de sus intereses y habilidades`
+  },
+  mod2: {
+    docTitle:'Mapa de Oportunidades de Negocio',icon:'🗺️',color:'#0891b2',
+    objetivo:'Identificar y priorizar las oportunidades con mayor potencial para que el estudiante enfoque sus esfuerzos.',
+    instruccion:`Genera un MAPA DE OPORTUNIDADES con:
+1. LAS 3 OPORTUNIDADES MÁS PROMETEDORAS (extraídas de las respuestas, con nombres concretos)
+2. EVALUACIÓN por oportunidad: potencial de mercado (1-10), viabilidad (1-10), alineación personal (1-10)
+3. OPORTUNIDAD ESTRELLA — la #1 recomendada con justificación detallada
+4. FACTORES DEL ENTORNO que favorecen esta oportunidad (tendencias, vacíos, necesidades)
+5. OBSTÁCULOS A ANTICIPAR — 2 riesgos principales y cómo mitigarlos
+6. PRIMER PASO concreto para empezar a aprovechar la oportunidad esta semana`
+  },
+  mod3: {
+    docTitle:'Perfil del Cliente Ideal',icon:'👤',color:'#7c3aed',
+    objetivo:'Definir con precisión a quién le resolverás un problema y qué necesita realmente.',
+    instruccion:`Genera el PERFIL DEL CLIENTE IDEAL (Buyer Persona) con:
+1. NOMBRE FICTICIO Y DESCRIPCIÓN del cliente ideal en 3-4 características clave
+2. SUS 3 DOLORES MÁS CRÍTICOS, ordenados por urgencia e intensidad
+3. SUS 3 GANANCIAS MÁS DESEADAS, ordenadas por importancia
+4. INSIGHT PODEROSO — la verdad no obvia sobre este cliente que abre una oportunidad única
+5. CÓMO LLEGAR A ESTE CLIENTE — canales, contextos y momentos para conectar
+6. MENSAJE CLAVE — qué decirle en 1 frase para que se sienta completamente comprendido`
+  },
+  mod4: {
+    docTitle:'Diagnóstico: Problema y Solución',icon:'🔬',color:'#dc2626',
+    objetivo:'Definir el problema con precisión y determinar qué solución tiene mayor potencial.',
+    instruccion:`Genera el DIAGNÓSTICO PROBLEMA-SOLUCIÓN con:
+1. DECLARACIÓN DEL PROBLEMA VALIDADA como POV statement: "[Usuario] necesita [necesidad] porque [insight profundo]"
+2. EVALUACIÓN DE LAS IDEAS del estudiante: originalidad (1-5), viabilidad (1-5), impacto (1-5) por cada idea
+3. SOLUCIÓN GANADORA — la idea con más potencial y por qué supera a las demás
+4. ESPECIFICACIÓN DEL PROTOTIPO — qué debería incluir el prototipo mínimo
+5. PLAN DE TESTEO — con quién probarlo, qué preguntar, qué resultado mínimo confirmaría viabilidad`
+  },
+  mod5: {
+    docTitle:'Ideas Innovadoras Generadas (SCAMPER)',icon:'💡',color:'#d97706',
+    objetivo:'Identificar las ideas más innovadoras y viables que surgieron de aplicar la herramienta SCAMPER.',
+    instruccion:`Genera el PORTAFOLIO DE IDEAS INNOVADORAS con:
+1. IDEA DESTACADA POR CADA LETRA SCAMPER (S/C/A/M/P/E/R) — la innovación más relevante de cada sección
+2. TOP 3 IDEAS MÁS PROMETEDORAS por originalidad + viabilidad + potencial de mercado
+3. IDEA GANADORA — la innovación más poderosa con descripción de cómo convertirse en negocio
+4. COMBINACIÓN IDEAL — si hay ideas que se potencian juntas, explica la combinación óptima
+5. SIGUIENTE EXPERIMENTO — qué probar primero para validar la idea ganadora`
+  },
+  mod6: {
+    docTitle:'Propuesta de Valor Definitiva',icon:'💎',color:'#059669',
+    objetivo:'Construir una propuesta de valor única, clara y diferenciada, lista para comunicar.',
+    instruccion:`Genera la PROPUESTA DE VALOR DEFINITIVA con:
+1. DECLARACIÓN DE VALOR en una frase: "Ayudamos a [cliente] a [resultado clave] mediante [solución diferenciada]"
+2. FIT DOLOR-SOLUCIÓN — cómo cada aliviador conecta con un dolor real del cliente
+3. FIT GANANCIA-CREADOR — cómo cada creador de ganancia responde a una ganancia deseada
+4. DIFERENCIADOR REAL — qué hace ÚNICA esta propuesta frente a las alternativas del mercado
+5. PROMESA AL CLIENTE — qué le garantiza que ningún otro puede ofrecer actualmente
+6. PROPUESTA DE VALOR CANVAS — tabla resumida: Trabajos / Dolores / Ganancias vs. Producto / Aliviadores / Creadores`
+  },
+  mod7: {
+    docTitle:'Plan de Validación Lean',icon:'🧪',color:'#0ea5e9',
+    objetivo:'Definir qué debes validar primero y cómo hacerlo rápido y económico.',
+    instruccion:`Genera el PLAN DE VALIDACIÓN LEAN con:
+1. HIPÓTESIS CRÍTICA #1 — la suposición más arriesgada que, si es falsa, hundiría el negocio
+2. EXPERIMENTO MÍNIMO — cómo validarla en menos de 2 semanas y con menos de $50
+3. CRITERIO DE ÉXITO — el número o acción específica que confirmaría la hipótesis
+4. PLAN B (PIVOTE) — qué ajuste haría al modelo si la hipótesis falla
+5. LO QUE YA SABE — aprendizajes ya validados que puede usar como base
+6. ROADMAP DE VALIDACIÓN — secuencia de 3 experimentos ordenados por prioridad y tiempo`
+  },
+  mod8: {
+    docTitle:'Especificación del MVP',icon:'🛠️',color:'#ea580c',
+    objetivo:'Definir exactamente qué construir primero, con qué recursos y cómo medir el éxito.',
+    instruccion:`Genera la ESPECIFICACIÓN DEL MVP con:
+1. DESCRIPCIÓN EXACTA — qué es, qué hace y qué NO incluye en esta primera versión
+2. CARACTERÍSTICAS MÍNIMAS — lista de 3-5 elementos indispensables que no pueden faltar
+3. PLAN DE LANZAMIENTO EN 6 SEMANAS — semanas 1-2 (construir), 3-4 (lanzar), 5-6 (medir y ajustar)
+4. PRIMEROS 10 CLIENTES — perfil exacto + cómo conseguirlos + qué ofrecerles para probarlo
+5. MÉTRICAS DE VALIDACIÓN — 3 indicadores que dirán si el MVP funciona o no
+6. INVERSIÓN ESTIMADA — tiempo (horas/semanas) y dinero mínimo requerido`
+  },
+  mod9: {
+    docTitle:'Modelo de Negocio Canvas Completo',icon:'📊',color:'#7c3aed',
+    objetivo:'Tu modelo de negocio completo y coherente en un solo documento, listo para presentar.',
+    instruccion:`Genera el MODELO DE NEGOCIO CANVAS COMPLETO con:
+1. LOS 9 BLOQUES SINTETIZADOS — resume concisa y claramente cada bloque con la info del estudiante
+2. COHERENCIA DEL MODELO — evalúa si los bloques se conectan lógicamente; identifica incoherencias
+3. MOTOR DE CRECIMIENTO — cómo este modelo genera clientes, retención e ingresos recurrentes
+4. ANÁLISIS FINANCIERO BÁSICO — los 3 mayores costos vs. las 3 principales fuentes de ingreso
+5. VENTAJA COMPETITIVA — qué tiene este modelo que será difícil de copiar
+6. VERSIÓN MEJORADA — 2-3 cambios concretos que harían este modelo más robusto y escalable`
+  },
+  mod10: {
+    docTitle:'Pitch Elevator Listo para Presentar',icon:'🎤',color:'#e11d48',
+    objetivo:'Tu pitch de 60 segundos completo, pulido y listo para usar ante cualquier audiencia.',
+    instruccion:`Genera el PITCH ELEVATOR ESTRUCTURADO con:
+1. PITCH COMPLETO (60 segundos) — texto completo en primera persona, fluido y persuasivo, usando todos los elementos del estudiante
+2. VERSIÓN CORTA (30 segundos) — versión condensada para cuando hay menos tiempo
+3. GANCHO DE APERTURA — la primera oración que capta la atención inmediatamente
+4. DATO DE IMPACTO — una estadística o número concreto que haga sentir la urgencia del problema
+5. PUNTOS FUERTES — qué elementos del pitch resuenan más y por qué
+6. ASPECTOS A REFORZAR — qué partes necesitan más trabajo o datos
+7. ADAPTACIÓN PARA INVERSORES vs. CLIENTES — cómo ajustar el mensaje según la audiencia`
+  },
+  mod11: {
+    docTitle:'Plan Básico de Negocio',icon:'📋',color:'#0f766e',
+    objetivo:'Tu plan de negocio completo y estructurado, listo para presentar a socios, inversores o instituciones.',
+    instruccion:`Genera el PLAN BÁSICO DE NEGOCIO completo con:
+1. RESUMEN EJECUTIVO — párrafo poderoso que resume el negocio, el problema, la solución y el potencial
+2. ANÁLISIS FODA — 3 fortalezas, 3 oportunidades, 3 debilidades, 3 amenazas específicas
+3. MERCADO OBJETIVO — tamaño estimado, segmento primario, estrategia de entrada
+4. ESTRATEGIA DE MARKETING — canales más efectivos, estrategia de precio, primeros 100 clientes
+5. PLAN FINANCIERO BÁSICO — costos de inicio, costos operativos mensuales, estimación del punto de equilibrio
+6. PLAN DE ACCIÓN 90 DÍAS — Mes 1 (preparación), Mes 2 (lanzamiento), Mes 3 (crecimiento), con acciones concretas
+7. FACTORES CRÍTICOS DE ÉXITO — las 3 cosas que absolutamente deben salir bien para que prospere`
+  }
+};
+
+/* ================================================================
+   GENERATE VISUAL REPORT (IA) — RESULTADO POR MÓDULO
+   ================================================================ */
+async function generateVisualReport(idx) {
+  const m = MODULES[idx];
+  const state = getState();
+  const s = state.student || {};
+
+  // Check if there are answers
+  const answers = m.questions.map(q => ({
+    label: q.label,
+    question: q.text,
+    answer: (state.answers[m.id] && state.answers[m.id][q.id]) || ''
+  }));
+  const hasContent = answers.some(a => a.answer.trim().length > 10);
+  if (!hasContent) {
+    showToast('⚠️ Completa al menos algunas preguntas antes de generar el reporte.');
+    return;
+  }
+
+  // Show loading
+  const loading = document.getElementById('report-loading');
+  loading.classList.add('show');
+  const steps = ['rls-1','rls-2','rls-3','rls-4'];
+  steps.forEach(id => { document.getElementById(id).className = 'rls-step'; });
+  document.getElementById('rls-1').className = 'rls-step active';
+
+  async function advanceStep(i) {
+    await new Promise(r => setTimeout(r, 600));
+    if (i > 0) document.getElementById(steps[i-1]).className = 'rls-step done';
+    if (i < steps.length) document.getElementById(steps[i]).className = 'rls-step active';
+  }
+
+  try {
+    await advanceStep(1);
+
+    // Build prompt for Claude
+    const answersText = answers.map((a, i) =>
+      `Pregunta ${i+1} — ${a.label}: "${a.question}"\nRespuesta: "${a.answer || '(Sin respuesta)'}"`)
+      .join('\n\n');
+
+    const prompt = `Eres un experto en análisis de emprendimiento. Analiza las respuestas de un estudiante al módulo "${m.title}" (${m.tag}).
+
+RESPUESTAS DEL ESTUDIANTE:
+${answersText}
+
+INSTRUCCIÓN CRÍTICA: Responde ÚNICAMENTE con un objeto JSON válido. Sin texto adicional, sin explicaciones, sin markdown, sin comentarios. Solo el JSON.
+
+El JSON debe tener esta estructura exacta:
+{
+  "resumen_ejecutivo": "Párrafo de 3-4 oraciones que sintetizan lo más importante de las respuestas del estudiante",
+  "nivel_general": "alto|medio|bajo",
+  "puntaje": número entre 0 y 100,
+  "fortalezas": ["fortaleza 1", "fortaleza 2", "fortaleza 3"],
+  "areas_mejora": ["área 1", "área 2", "área 3"],
+  "palabras_clave": ["palabra1", "palabra2", "palabra3", "palabra4", "palabra5", "palabra6", "palabra7", "palabra8"],
+  "analisis_preguntas": [
+    {
+      "pregunta": "etiqueta corta",
+      "nivel": "alto|medio|bajo",
+      "puntaje": número entre 0 y 10,
+      "insight": "análisis de 1-2 oraciones",
+      "sugerencia": "recomendación concreta en 1 oración"
+    }
+  ],
+  "recomendacion_general": "Consejo final motivador de 2-3 oraciones para el estudiante",
+  "siguiente_accion": "Una acción concreta e inmediata que el estudiante debe realizar"
+}`;
+
+    await advanceStep(2);
+
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    const data = await response.json();
+    const rawText = data.content?.find(b => b.type === 'text')?.text || '{}';
+    let analysis;
+    try {
+      const clean = rawText.replace(/```json|```/g,'').trim();
+      analysis = JSON.parse(clean);
+    } catch(e) {
+      analysis = {
+        resumen_ejecutivo: 'El estudiante ha comenzado a desarrollar su idea de negocio con elementos iniciales identificados.',
+        nivel_general: 'medio', puntaje: 55,
+        fortalezas: ['Ha identificado elementos clave','Muestra interés genuino','Tiene una base inicial'],
+        areas_mejora: ['Profundizar en el análisis','Agregar más detalles específicos','Validar con datos reales'],
+        palabras_clave: ['emprendimiento','innovación','cliente','mercado','solución','valor','negocio','idea'],
+        analisis_preguntas: m.questions.map(q => ({ pregunta: q.label, nivel:'medio', puntaje:5, insight:'Respuesta con elementos base.', sugerencia:'Amplía con más detalles y ejemplos concretos.' })),
+        recomendacion_general: 'Continúa desarrollando cada elemento con mayor profundidad y ejemplos concretos.',
+        siguiente_accion: 'Realiza entrevistas con 3 posibles clientes para validar tus supuestos.'
+      };
+    }
+
+    await advanceStep(3);
+    const reportHtml = buildVisualReportHTML(m, s, answers, analysis);
+    await advanceStep(4);
+    await new Promise(r => setTimeout(r, 500));
+
+    loading.classList.remove('show');
+
+    const win = window.open('', '_blank', 'width=1100,height=850');
+    win.document.write(reportHtml);
+    win.document.close();
+    showToast('📊 Reporte visual generado exitosamente');
+
+  } catch(err) {
+    loading.classList.remove('show');
+    console.error(err);
+    showToast('❌ Error al generar el reporte. Verifica tu conexión.');
+  }
+}
+
+/* ================================================================
+   BUILD RESULT DOCUMENT HTML — orientado a resultados accionables
+   ================================================================ */
+function buildResultDocumentHTML(m, s, answers, result, cfg) {
+  const now = new Date().toLocaleDateString('es-EC', { year:'numeric', month:'long', day:'numeric' });
+  const logos = getLogos();
+  const color = cfg.color || m.color || '#c41230';
+  const levelColor = { alto:'#10b981', medio:'#f59e0b', bajo:'#ef4444' };
+  const levelLabel = { alto:'Alto', medio:'Medio', bajo:'Bajo' };
+  const lc = levelColor[result.indicador?.nivel] || '#f59e0b';
+  const score = result.indicador?.valor ?? 55;
+  const circumference = 2 * Math.PI * 70;
+  const dashOffset = circumference * (1 - score / 100);
+
+  // Render sections
+  const sectionsHTML = (result.secciones || []).map(sec => {
+    const hasItems = sec.items && sec.items.length > 0;
+    const itemsHTML = hasItems
+      ? `<ul style="margin:10px 0 0;padding-left:0;list-style:none;display:flex;flex-direction:column;gap:7px">
+          ${sec.items.map(it => `<li style="display:flex;align-items:flex-start;gap:9px;font-size:.86rem;color:#334155;line-height:1.6">
+            <span style="color:${color};font-weight:700;flex-shrink:0;margin-top:1px">›</span>${it}
+          </li>`).join('')}
+        </ul>` : '';
+    const borderColor = sec.tipo === 'recomendacion' ? '#10b981'
+                      : sec.tipo === 'evaluacion' ? '#f59e0b'
+                      : sec.tipo === 'pitch' ? color : '#e2e8f0';
+    return `<div style="background:#fff;border:1.5px solid #e2e8f0;border-left:4px solid ${borderColor};border-radius:0 12px 12px 0;padding:18px 20px;margin-bottom:14px">
+      <div style="font-size:.7rem;font-weight:700;color:${borderColor};text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">${
+        sec.tipo === 'recomendacion' ? '✅ Recomendación'
+        : sec.tipo === 'evaluacion' ? '📊 Evaluación'
+        : sec.tipo === 'pitch' ? '🎤 Pitch'
+        : sec.tipo === 'conclusion' ? '🎯 Conclusión'
+        : '📌 '} ${sec.titulo}</div>
+      ${sec.contenido ? `<p style="font-size:.88rem;color:#1e293b;line-height:1.75;margin:0">${sec.contenido}</p>` : ''}
+      ${itemsHTML}
+    </div>`;
+  }).join('');
+
+  // Gauge SVG
+  const gaugeColor = score >= 70 ? '#10b981' : score >= 45 ? '#f59e0b' : '#ef4444';
+  const gauge = `<svg viewBox="0 0 180 160" xmlns="http://www.w3.org/2000/svg" width="170">
+    <circle cx="90" cy="90" r="70" fill="none" stroke="#e2e8f0" stroke-width="14"/>
+    <circle cx="90" cy="90" r="70" fill="none" stroke="${gaugeColor}" stroke-width="14"
+      stroke-dasharray="${circumference}" stroke-dashoffset="${dashOffset}"
+      stroke-linecap="round" transform="rotate(-90 90 90)"/>
+    <text x="90" y="82" text-anchor="middle" font-size="30" font-weight="800" fill="${gaugeColor}" font-family="monospace">${score}</text>
+    <text x="90" y="100" text-anchor="middle" font-size="11" fill="#64748b" font-family="sans-serif">/ 100</text>
+    <text x="90" y="118" text-anchor="middle" font-size="10" fill="#94a3b8" font-family="sans-serif">${result.indicador?.etiqueta || 'Nivel'}</text>
+  </svg>`;
+
+  // Próximos pasos
+  const pasosHTML = (result.proximos_pasos || []).map((p, i) =>
+    `<div style="display:flex;align-items:flex-start;gap:12px;padding:11px 14px;background:#fff;border:1px solid #e2e8f0;border-radius:10px">
+      <div style="width:26px;height:26px;border-radius:50%;background:${color};color:#fff;font-size:.78rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">${i+1}</div>
+      <span style="font-size:.86rem;color:#1e293b;line-height:1.55;padding-top:3px">${p}</span>
+    </div>`
+  ).join('');
+
+  // Letterhead
+  const lhHTML = `<div style="border-bottom:3px solid ${color};padding-bottom:14px;margin-bottom:18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+    <div style="flex-shrink:0">
+      ${logos.official
+        ? `<img src="${logos.official}" style="height:60px;max-width:160px;object-fit:contain">`
+        : `<div style="width:60px;height:60px;border-radius:50%;border:2.5px solid #1a1a1a;display:flex;align-items:center;justify-content:center;font-size:1.8rem">🎓</div>`}
+    </div>
+    <div style="flex:1;border-left:1.5px solid #e2e8f0;padding-left:14px;min-width:180px">
+      <div style="font-size:10.5pt;font-weight:800;color:#1a1a1a">Universidad Nacional de Loja</div>
+      <div style="font-size:8pt;color:${color};font-weight:700;margin-top:2px">Facultad Jurídica, Social y Administrativa</div>
+      <div style="font-size:7pt;color:#64748b;margin-top:2px">IdeaLab Emprende · Herramienta académica de emprendimiento</div>
+    </div>
+    <div style="flex-shrink:0;display:flex;gap:8px;align-items:center">
+      ${logos.bear ? `<img src="${logos.bear}" style="height:54px;object-fit:contain">` : ''}
+      ${logos.faculty ? `<img src="${logos.faculty}" style="height:44px;max-width:70px;object-fit:contain">` : ''}
+    </div>
+  </div>`;
+
+  return `<!DOCTYPE html>
+<html lang="es"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${result.titulo_documento} — ${s.nombre || 'Estudiante'}</title>
+<style>
+@page { size:A4; margin:1.8cm 2cm; }
+*{ box-sizing:border-box; margin:0; padding:0; }
+body{ font-family:'Segoe UI',Arial,sans-serif; background:#f0f4ff; color:#0f172a; -webkit-font-smoothing:antialiased; }
+.page{ max-width:920px; margin:0 auto; padding:28px 24px 40px; }
+.card{ background:#fff; border-radius:14px; box-shadow:0 4px 16px rgba(0,0,0,.07); overflow:hidden; margin-bottom:20px; }
+.card-body{ padding:24px 26px; }
+.grid-2{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.tag{ display:inline-flex; align-items:center; gap:5px; background:${hexToRgba(color,.1)}; color:${color}; border:1px solid ${hexToRgba(color,.3)}; padding:4px 12px; border-radius:99px; font-size:7pt; font-weight:700; text-transform:uppercase; letter-spacing:.05em; }
+.print-btn{ position:fixed; bottom:20px; right:20px; background:${color}; color:#fff; border:none; padding:11px 20px; border-radius:10px; font-size:9pt; font-weight:700; cursor:pointer; box-shadow:0 4px 14px rgba(0,0,0,.2); }
+@media print{ .print-btn{ display:none!important } body{ background:#fff } .page{ padding:0 } .card{ box-shadow:none } }
+@media(max-width:640px){ .grid-2{ grid-template-columns:1fr } }
+</style>
+</head><body>
+
+<div class="page">
+
+<!-- LETTERHEAD -->
+<div class="card"><div class="card-body" style="padding:16px 20px">${lhHTML}</div></div>
+
+<!-- COVER STRIP -->
+<div style="background:linear-gradient(135deg,${color},${color}cc);border-radius:14px;padding:22px 26px;margin-bottom:20px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap">
+  <div>
+    <div class="tag" style="background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.25);color:rgba(255,255,255,.9);margin-bottom:10px">${cfg.icon || m.icon} Módulo ${m.num} · ${m.tag}</div>
+    <div style="font-size:7.5pt;color:rgba(255,255,255,.55);margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em;font-weight:700">📋 DOCUMENTO DE RESULTADO</div>
+    <div style="font-size:18pt;font-weight:800;color:#fff;line-height:1.15;margin-bottom:6px">${result.titulo_documento}</div>
+    <div style="font-size:8pt;color:rgba(255,255,255,.6)">${m.author}</div>
+  </div>
+  <div style="text-align:right;font-size:7.5pt;color:rgba(255,255,255,.6);flex-shrink:0">
+    <strong style="color:#fff;font-size:9pt;display:block;margin-bottom:2px">${s.nombre || '—'}</strong>
+    ${s.carrera ? `<div>${s.carrera}</div>` : ''}
+    ${s.idea ? `<div style="color:rgba(255,255,255,.8);font-style:italic">${s.idea}</div>` : ''}
+    <div style="margin-top:4px">${now}</div>
+  </div>
+</div>
+
+<!-- INDICADOR + RESULTADO PRINCIPAL -->
+<div class="card">
+  <div class="card-body">
+    <div style="display:flex;align-items:flex-start;gap:24px;flex-wrap:wrap">
+      <div style="flex-shrink:0">${gauge}</div>
+      <div style="flex:1;min-width:200px">
+        <div style="font-size:.68rem;font-weight:700;color:${color};text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">🎯 Resultado principal</div>
+        <p style="font-size:.97rem;color:#0f172a;line-height:1.75;margin-bottom:16px;font-weight:500">${result.resultado_principal || ''}</p>
+        <!-- ENTREGABLE CLAVE -->
+        <div style="background:${hexToRgba(color,.07)};border:2px solid ${color};border-radius:10px;padding:14px 16px">
+          <div style="font-size:.68rem;font-weight:700;color:${color};text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">⭐ Entregable clave de este módulo</div>
+          <p style="font-size:.9rem;color:#1e293b;line-height:1.65;font-weight:600">${result.entregable_clave || ''}</p>
+        </div>
+      </div>
+    </div>
+    ${result.advertencia ? `<div style="background:#fef2f2;border:1px solid #fca5a5;border-radius:8px;padding:11px 14px;margin-top:16px;font-size:.82rem;color:#991b1b;display:flex;align-items:flex-start;gap:8px"><span>⚠️</span><span>${result.advertencia}</span></div>` : ''}
+  </div>
+</div>
+
+<!-- SECCIONES DE RESULTADO -->
+<div class="card">
+  <div class="card-body">
+    <div style="font-size:.68rem;font-weight:700;color:${color};text-transform:uppercase;letter-spacing:.07em;margin-bottom:16px">📑 Análisis detallado por sección</div>
+    ${sectionsHTML || '<p style="color:#94a3b8;font-size:.85rem">Sin secciones generadas.</p>'}
+  </div>
+</div>
+
+<!-- PRÓXIMOS PASOS -->
+<div class="card">
+  <div class="card-body">
+    <div style="font-size:.68rem;font-weight:700;color:${color};text-transform:uppercase;letter-spacing:.07em;margin-bottom:14px">🚀 Próximos pasos concretos</div>
+    <div style="display:flex;flex-direction:column;gap:8px">${pasosHTML}</div>
+  </div>
+</div>
+
+<!-- RESPUESTAS DEL ESTUDIANTE (referencia) -->
+<div class="card">
+  <div class="card-body">
+    <div style="font-size:.68rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.07em;margin-bottom:14px">📝 Respuestas registradas (referencia)</div>
+    ${answers.map((a, i) => `
+      <div style="margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid #f1f5f9">
+        <div style="font-size:.72rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px">${String(i+1).padStart(2,'0')}. ${a.label}</div>
+        <div style="background:#f8faff;border-left:3px solid ${color}33;padding:10px 12px;border-radius:0 7px 7px 0;font-size:.83rem;color:#334155;line-height:1.65;white-space:pre-wrap">${a.answer || '(Sin respuesta)'}</div>
+      </div>`).join('')}
+  </div>
+</div>
+
+<div style="text-align:center;font-size:7pt;color:#94a3b8;padding-top:8px">
+  IdeaLab Emprende · Universidad Nacional de Loja · ${now} · Módulo ${m.num} de ${MODULES.length}
+</div>
+</div>
+
+<button class="print-btn" onclick="window.print()">🖨️ Guardar PDF</button>
+</body></html>`;
+}
+
+/* ================================================================
+   GENERATE FINAL BUSINESS PLAN
+   ================================================================ */
+async function generateFinalBusinessPlan() {
+  const state = getState();
+  const s = state.student || {};
+  const completedCount = Object.values(state.completed).filter(Boolean).length;
+
+  if (completedCount < 6) {
+    showToast('⚠️ Completa al menos 6 módulos para generar el Plan Final.');
+    return;
+  }
+
+  const loading = document.getElementById('report-loading');
+  loading.classList.add('show');
+  const steps = ['rls-1','rls-2','rls-3','rls-4'];
+  steps.forEach(id => { document.getElementById(id).className = 'rls-step'; });
+  document.getElementById('rls-1').textContent = '🔍 Consolidando todos los módulos';
+  document.getElementById('rls-1').className = 'rls-step active';
+
+  await new Promise(r => setTimeout(r, 600));
+  document.getElementById('rls-1').className = 'rls-step done';
+  document.getElementById('rls-2').className = 'rls-step active';
+  document.getElementById('rls-2').textContent = '🧠 Sintetizando tu idea de negocio';
+
+  // Collect all answers from all modules
+  const allAnswers = MODULES.map(mod => {
+    const modAnswers = mod.questions.map(q => {
+      const ans = (state.answers[mod.id] && state.answers[mod.id][q.id]) || '';
+      return ans ? `${q.label}: ${ans}` : null;
+    }).filter(Boolean).join('\n');
+    return modAnswers ? `\n--- ${mod.title.toUpperCase()} ---\n${modAnswers}` : '';
+  }).filter(Boolean).join('\n');
+
+  const prompt = `Eres un experto en emprendimiento e innovación. Un estudiante universitario de Ecuador ha completado un programa de emprendimiento de 11 módulos. Analiza TODA la información y genera su PLAN DE NEGOCIO COMPLETO y su IDEA DE NEGOCIO DEFINITIVA.
+
+DATOS DEL ESTUDIANTE:
+Nombre: ${s.nombre || 'Estudiante'}
+Carrera: ${s.carrera || 'No especificada'}
+Idea inicial: ${s.idea || 'No especificada'}
+
+INFORMACIÓN DE TODOS LOS MÓDULOS:
+${allAnswers}
+
+INSTRUCCIÓN CRÍTICA: Responde ÚNICAMENTE con un objeto JSON válido. Sin texto adicional ni markdown.
+
+{
+  "nombre_negocio": "[Nombre sugerido para el negocio, creativo y memorable]",
+  "eslogan": "[Eslogan corto y poderoso del negocio]",
+  "idea_negocio": "[Descripción clara del negocio en 3-4 oraciones: qué es, para quién, cómo genera valor]",
+  "propuesta_valor": "[Propuesta de valor definitiva en 1-2 oraciones impactantes]",
+  "cliente_ideal": "[Descripción precisa del cliente objetivo con características clave]",
+  "problema_que_resuelve": "[El problema central que resuelve este negocio]",
+  "solucion_diferenciada": "[Cómo la solución es única y superior a las alternativas]",
+  "modelo_ingresos": "[Cómo genera dinero el negocio: precio, modalidad, frecuencia]",
+  "mvp_descripcion": "[Descripción exacta del Producto Mínimo Viable para lanzar]",
+  "analisis_foda": {
+    "fortalezas": ["fortaleza 1", "fortaleza 2", "fortaleza 3"],
+    "oportunidades": ["oportunidad 1", "oportunidad 2", "oportunidad 3"],
+    "debilidades": ["debilidad 1", "debilidad 2", "debilidad 3"],
+    "amenazas": ["amenaza 1", "amenaza 2", "amenaza 3"]
+  },
+  "plan_90_dias": {
+    "mes1": ["acción concreta 1", "acción concreta 2", "acción concreta 3"],
+    "mes2": ["acción concreta 1", "acción concreta 2", "acción concreta 3"],
+    "mes3": ["acción concreta 1", "acción concreta 2", "acción concreta 3"]
+  },
+  "inversion_estimada": "[Rango de inversión inicial necesaria en dólares]",
+  "proyeccion_6meses": "[Proyección realista de ingresos o clientes en los primeros 6 meses]",
+  "factores_exito": ["factor crítico 1", "factor crítico 2", "factor crítico 3"],
+  "primer_paso_hoy": "[La acción más importante que debe tomar HOY para iniciar]",
+  "mensaje_motivador": "[Mensaje personalizado de 2-3 oraciones que reconozca el trabajo del estudiante y lo motive a continuar]"
+}`;
+
+  try {
+    await new Promise(r => setTimeout(r, 600));
+    document.getElementById('rls-2').className = 'rls-step done';
+    document.getElementById('rls-3').className = 'rls-step active';
+    document.getElementById('rls-3').textContent = '📊 Construyendo el plan de negocio';
+
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 2500,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    const data = await response.json();
+    const rawText = data.content?.find(b => b.type === 'text')?.text || '{}';
+    let plan;
+    try { plan = JSON.parse(rawText.replace(/```json|```/g,'').trim()); }
+    catch(e) { plan = {}; }
+
+    await new Promise(r => setTimeout(r, 500));
+    document.getElementById('rls-3').className = 'rls-step done';
+    document.getElementById('rls-4').className = 'rls-step active';
+    document.getElementById('rls-4').textContent = '📄 Generando documento final';
+
+    const html = buildFinalPlanHTML(s, plan);
+    await new Promise(r => setTimeout(r, 400));
+    loading.classList.remove('show');
+    const win = window.open('', '_blank', 'width=1050,height=860');
+    win.document.write(html);
+    win.document.close();
+    showToast('🚀 Plan de Negocio Final generado');
+  } catch(err) {
+    loading.classList.remove('show');
+    showToast('❌ Error al generar el plan. Verifica tu conexión.');
+  }
+}
+
+function buildFinalPlanHTML(s, p) {
+  const logos = getLogos();
+  const now = new Date().toLocaleDateString('es-EC', { year:'numeric', month:'long', day:'numeric' });
+  const color = '#c41230';
+
+  const fodaBlock = (title, items, c) =>
+    `<div style="background:${c}15;border:1.5px solid ${c}40;border-radius:10px;padding:14px">
+      <div style="font-size:.72rem;font-weight:700;color:${c};text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">${title}</div>
+      ${(items||[]).map(i=>`<div style="font-size:.83rem;color:#1e293b;padding:5px 0;border-bottom:1px solid ${c}20;line-height:1.5">• ${i}</div>`).join('')}
+    </div>`;
+
+  const planMes = (label, items, c) =>
+    `<div style="flex:1;min-width:200px">
+      <div style="background:${c};color:#fff;padding:8px 14px;border-radius:8px 8px 0 0;font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em">${label}</div>
+      <div style="background:#fff;border:1.5px solid ${c}30;border-top:none;border-radius:0 0 8px 8px;padding:12px 14px">
+        ${(items||[]).map(i=>`<div style="font-size:.82rem;color:#334155;padding:5px 0;border-bottom:1px solid #f1f5f9;line-height:1.5">→ ${i}</div>`).join('')}
+      </div>
+    </div>`;
+
+  return `<!DOCTYPE html>
+<html lang="es"><head>
+<meta charset="UTF-8"><title>Plan de Negocio Final — ${s.nombre||'Estudiante'}</title>
+<style>
+@page{size:A4;margin:1.8cm 2cm}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f4ff;color:#0f172a}
+.page{max-width:920px;margin:0 auto;padding:28px 24px 40px}
+.card{background:#fff;border-radius:14px;box-shadow:0 4px 16px rgba(0,0,0,.07);margin-bottom:20px;overflow:hidden}
+.card-body{padding:22px 24px}
+h2{font-size:12pt;font-weight:800;color:#0f172a;margin-bottom:12px}
+.section-label{font-size:.68rem;font-weight:700;color:${color};text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px}
+.print-btn{position:fixed;bottom:20px;right:20px;background:${color};color:#fff;border:none;padding:11px 20px;border-radius:10px;font-size:9pt;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(196,18,48,.4)}
+@media print{.print-btn{display:none!important}body{background:#fff}.page{padding:0}.card{box-shadow:none}}
+</style>
+</head><body><div class="page">
+
+<!-- LETTERHEAD -->
+<div class="card"><div class="card-body" style="padding:14px 20px">
+  <div style="border-bottom:3px solid ${color};padding-bottom:12px;display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+    ${logos.official?`<img src="${logos.official}" style="height:58px;max-width:150px;object-fit:contain">`:`<div style="width:58px;height:58px;border-radius:50%;border:2px solid #1a1a1a;display:flex;align-items:center;justify-content:center;font-size:1.6rem">🎓</div>`}
+    <div style="flex:1;border-left:1.5px solid #e2e8f0;padding-left:12px">
+      <div style="font-size:10pt;font-weight:800;color:#1a1a1a">Universidad Nacional de Loja</div>
+      <div style="font-size:7.5pt;color:${color};font-weight:700;margin-top:1px">Facultad Jurídica, Social y Administrativa</div>
+      <div style="font-size:7pt;color:#64748b;margin-top:1px">IdeaLab Emprende · Herramienta académica de emprendimiento</div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      ${logos.bear?`<img src="${logos.bear}" style="height:52px;object-fit:contain">`:''}
+      ${logos.faculty?`<img src="${logos.faculty}" style="height:40px;max-width:70px;object-fit:contain">`:''}
+    </div>
+  </div>
+</div></div>
+
+<!-- HERO CARD -->
+<div style="background:linear-gradient(135deg,#0f172a,${color});border-radius:14px;padding:30px 28px;margin-bottom:20px">
+  <div style="font-size:7.5pt;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.07em;font-weight:700;margin-bottom:6px">🚀 DOCUMENTO DE SÍNTESIS FINAL</div>
+  <div style="font-size:22pt;font-weight:800;color:#fff;line-height:1.15;margin-bottom:6px">${p.nombre_negocio||'Mi Idea de Negocio'}</div>
+  <div style="font-size:10.5pt;color:rgba(255,255,255,.7);font-style:italic;margin-bottom:20px">"${p.eslogan||''}"</div>
+  <div style="background:rgba(255,255,255,.1);border-radius:10px;padding:14px 16px">
+    <p style="font-size:9pt;color:rgba(255,255,255,.88);line-height:1.75">${p.idea_negocio||''}</p>
+  </div>
+  <div style="margin-top:14px;display:flex;gap:12px;flex-wrap:wrap;font-size:7.5pt;color:rgba(255,255,255,.6)">
+    <span>👤 ${s.nombre||'—'}</span>
+    <span>🎓 ${s.carrera||'—'}</span>
+    <span>📅 ${now}</span>
+  </div>
+</div>
+
+<!-- PROPUESTA DE VALOR + CLIENTE -->
+<div class="card"><div class="card-body">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+    <div>
+      <div class="section-label">💎 Propuesta de valor</div>
+      <p style="font-size:.88rem;color:#1e293b;line-height:1.7;font-weight:600">${p.propuesta_valor||''}</p>
+    </div>
+    <div>
+      <div class="section-label">👤 Cliente ideal</div>
+      <p style="font-size:.86rem;color:#334155;line-height:1.7">${p.cliente_ideal||''}</p>
+    </div>
+    <div>
+      <div class="section-label">🔥 Problema que resuelve</div>
+      <p style="font-size:.86rem;color:#334155;line-height:1.7">${p.problema_que_resuelve||''}</p>
+    </div>
+    <div>
+      <div class="section-label">⚡ Solución diferenciada</div>
+      <p style="font-size:.86rem;color:#334155;line-height:1.7">${p.solucion_diferenciada||''}</p>
+    </div>
+  </div>
+</div></div>
+
+<!-- MODELO + MVP -->
+<div class="card"><div class="card-body">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+    <div style="background:#f0fdf4;border:1.5px solid #6ee7b7;border-radius:10px;padding:14px">
+      <div style="font-size:.68rem;font-weight:700;color:#059669;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">💰 Modelo de ingresos</div>
+      <p style="font-size:.86rem;color:#1e293b;line-height:1.65">${p.modelo_ingresos||''}</p>
+    </div>
+    <div style="background:#eff6ff;border:1.5px solid #93c5fd;border-radius:10px;padding:14px">
+      <div style="font-size:.68rem;font-weight:700;color:#2563eb;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">💰 Inversión estimada</div>
+      <p style="font-size:.86rem;color:#1e293b;line-height:1.65">${p.inversion_estimada||''}</p>
+    </div>
+  </div>
+  <div class="section-label">🛠️ Producto Mínimo Viable (MVP)</div>
+  <div style="background:#f8faff;border-left:4px solid #2563eb;border-radius:0 10px 10px 0;padding:14px 16px">
+    <p style="font-size:.87rem;color:#1e293b;line-height:1.7">${p.mvp_descripcion||''}</p>
+  </div>
+</div></div>
+
+<!-- ANÁLISIS FODA -->
+<div class="card"><div class="card-body">
+  <h2>📊 Análisis FODA</h2>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+    ${fodaBlock('✅ Fortalezas', p.analisis_foda?.fortalezas, '#10b981')}
+    ${fodaBlock('🌟 Oportunidades', p.analisis_foda?.oportunidades, '#2563eb')}
+    ${fodaBlock('⚠️ Debilidades', p.analisis_foda?.debilidades, '#f59e0b')}
+    ${fodaBlock('🔴 Amenazas', p.analisis_foda?.amenazas, '#ef4444')}
+  </div>
+</div></div>
+
+<!-- PLAN 90 DÍAS -->
+<div class="card"><div class="card-body">
+  <h2>📅 Plan de Acción — 90 días</h2>
+  <div style="display:flex;gap:12px;flex-wrap:wrap">
+    ${planMes('📦 Mes 1 — Preparación', p.plan_90_dias?.mes1, '#7c3aed')}
+    ${planMes('🚀 Mes 2 — Lanzamiento', p.plan_90_dias?.mes2, '#2563eb')}
+    ${planMes('📈 Mes 3 — Crecimiento', p.plan_90_dias?.mes3, '#059669')}
+  </div>
+</div></div>
+
+<!-- FACTORES DE ÉXITO + PROYECCIÓN -->
+<div class="card"><div class="card-body">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+    <div>
+      <h2>🎯 Factores críticos de éxito</h2>
+      ${(p.factores_exito||[]).map((f,i)=>`<div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #f1f5f9;align-items:flex-start">
+        <span style="width:22px;height:22px;border-radius:50%;background:${color};color:#fff;font-size:.72rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">${i+1}</span>
+        <span style="font-size:.85rem;color:#1e293b;line-height:1.55;padding-top:2px">${f}</span>
+      </div>`).join('')}
+    </div>
+    <div>
+      <h2>📈 Proyección 6 meses</h2>
+      <div style="background:#f0fdf4;border:1.5px solid #6ee7b7;border-radius:10px;padding:14px;margin-bottom:14px">
+        <p style="font-size:.86rem;color:#065f46;line-height:1.65">${p.proyeccion_6meses||''}</p>
+      </div>
+      <div style="background:${hexToRgba(color,.07)};border:2px solid ${color};border-radius:10px;padding:14px">
+        <div style="font-size:.68rem;font-weight:700;color:${color};text-transform:uppercase;margin-bottom:6px">⚡ Primer paso HOY</div>
+        <p style="font-size:.87rem;color:#1e293b;font-weight:600;line-height:1.6">${p.primer_paso_hoy||''}</p>
+      </div>
+    </div>
+  </div>
+</div></div>
+
+<!-- MENSAJE FINAL -->
+<div style="background:linear-gradient(135deg,#0f172a,${color}88);border-radius:14px;padding:24px 26px;text-align:center;margin-bottom:20px">
+  <div style="font-size:1.8rem;margin-bottom:10px">🎓</div>
+  <p style="font-size:10pt;color:rgba(255,255,255,.9);line-height:1.75;max-width:600px;margin:0 auto">${p.mensaje_motivador||'¡Felicitaciones por completar el programa IdeaLab Emprende! Tu idea de negocio tiene fundamentos sólidos. El siguiente paso es tuyo.'}</p>
+  <div style="margin-top:14px;font-size:7.5pt;color:rgba(255,255,255,.5)">IdeaLab Emprende · Universidad Nacional de Loja · ${now}</div>
+</div>
+
+</div>
+<button class="print-btn" onclick="window.print()">🖨️ Guardar PDF</button>
+</body></html>`;
+}
+
+/* ================================================================
+   BUILD VISUAL REPORT HTML (legacy — mantener por compatibilidad)
+   ================================================================ */
+function buildVisualReportHTML(m, s, answers, ai) {
+  return buildResultDocumentHTML(m, s, answers, {
+    titulo_documento: m.title, indicador: { valor: ai.puntaje||55, etiqueta:'Nivel general', nivel: ai.nivel_general||'medio' },
+    resultado_principal: ai.resumen_ejecutivo||'', entregable_clave: ai.siguiente_accion||'',
+    secciones: [
+      { titulo:'Fortalezas', tipo:'lista', contenido:'', items: ai.fortalezas||[] },
+      { titulo:'Áreas de mejora', tipo:'recomendacion', contenido:'', items: ai.areas_mejora||[] }
+    ],
+    proximos_pasos: [ai.siguiente_accion||'Continúa con el siguiente módulo'],
+    advertencia: null
+  }, MODULE_RESULTS[m.id] || {});
+}
+  const now = new Date().toLocaleDateString('es-EC', { year:'numeric', month:'long', day:'numeric' });
+  const color = m.color || '#2563eb';
+  const colorLight = hexToRgba(color, 0.12);
+  const colorMid = hexToRgba(color, 0.35);
+
+  // Colors for levels
+  const levelColor = { alto:'#10b981', medio:'#f59e0b', bajo:'#ef4444' };
+  const levelLabel = { alto:'Alto', medio:'Medio', bajo:'Bajo' };
+  const levelBg = { alto:'#ecfdf5', medio:'#fffbeb', bajo:'#fef2f2' };
+
+  // Compute per-question completeness for bar chart
+  const qData = answers.map((a, i) => ({
+    label: a.label,
+    chars: a.answer.trim().length,
+    pct: Math.min(100, Math.round((a.answer.trim().length / 200) * 100)),
+    aiScore: ai.analisis_preguntas?.[i]?.puntaje ?? 5,
+    nivel: ai.analisis_preguntas?.[i]?.nivel ?? 'medio',
+    insight: ai.analisis_preguntas?.[i]?.insight ?? '',
+    sugerencia: ai.analisis_preguntas?.[i]?.sugerencia ?? ''
+  }));
+
+  // SVG Bar Chart — AI scores
+  const barW = 700, barH = 260;
+  const barPad = { top:30, right:20, bottom:60, left:50 };
+  const nQ = qData.length;
+  const bw = Math.min(50, (barW - barPad.left - barPad.right) / nQ - 8);
+  const bSpacing = (barW - barPad.left - barPad.right) / nQ;
+  const maxScore = 10;
+  const scaleH = barH - barPad.top - barPad.bottom;
+
+  const bars = qData.map((q,i) => {
+    const x = barPad.left + i * bSpacing + (bSpacing - bw)/2;
+    const bh = (q.aiScore / maxScore) * scaleH;
+    const y = barPad.top + scaleH - bh;
+    const bc = levelColor[q.nivel] || color;
+    const shortLabel = q.label.length > 10 ? q.label.substring(0,9)+'…' : q.label;
+    return `
+      <rect x="${x}" y="${y}" width="${bw}" height="${bh}" rx="5" fill="${bc}" opacity="0.85"/>
+      <text x="${x + bw/2}" y="${y - 6}" text-anchor="middle" font-size="11" font-weight="700" fill="${bc}">${q.aiScore}</text>
+      <text x="${x + bw/2}" y="${barH - barPad.bottom + 14}" text-anchor="middle" font-size="9" fill="#64748b" transform="rotate(-25 ${x + bw/2} ${barH - barPad.bottom + 14})">${shortLabel}</text>`;
+  }).join('');
+
+  // Y-axis lines
+  const yLines = [0,2,4,6,8,10].map(v => {
+    const y = barPad.top + scaleH - (v/maxScore)*scaleH;
+    return `<line x1="${barPad.left}" x2="${barW - barPad.right}" y1="${y}" y2="${y}" stroke="#e2e8f0" stroke-width="1"/>
+            <text x="${barPad.left - 5}" y="${y+4}" text-anchor="end" font-size="10" fill="#94a3b8">${v}</text>`;
+  }).join('');
+
+  const barChart = `<svg viewBox="0 0 ${barW} ${barH}" xmlns="http://www.w3.org/2000/svg" width="100%">
+    ${yLines}${bars}
+    <text x="${barW/2}" y="${barH - 5}" text-anchor="middle" font-size="11" fill="#94a3b8">Puntuación por pregunta (escala 0-10)</text>
+  </svg>`;
+
+  // SVG Gauge — overall score
+  const score = ai.puntaje ?? 55;
+  const gaugeR = 70, gaugeCX = 90, gaugeCY = 90;
+  const circumference = 2 * Math.PI * gaugeR;
+  const dashOffset = circumference * (1 - score/100);
+  const gc = score >= 75 ? '#10b981' : score >= 50 ? '#f59e0b' : '#ef4444';
+  const gauge = `<svg viewBox="0 0 180 160" xmlns="http://www.w3.org/2000/svg" width="180">
+    <circle cx="${gaugeCX}" cy="${gaugeCY}" r="${gaugeR}" fill="none" stroke="#e2e8f0" stroke-width="14"/>
+    <circle cx="${gaugeCX}" cy="${gaugeCY}" r="${gaugeR}" fill="none" stroke="${gc}" stroke-width="14"
+      stroke-dasharray="${circumference}" stroke-dashoffset="${dashOffset}"
+      stroke-linecap="round" transform="rotate(-90 ${gaugeCX} ${gaugeCY})" style="transition:stroke-dashoffset 1s"/>
+    <text x="${gaugeCX}" y="${gaugeCY - 6}" text-anchor="middle" font-size="28" font-weight="800" fill="${gc}">${score}</text>
+    <text x="${gaugeCX}" y="${gaugeCY + 14}" text-anchor="middle" font-size="11" fill="#64748b">/ 100</text>
+    <text x="${gaugeCX}" y="${gaugeCY + 32}" text-anchor="middle" font-size="10" fill="#94a3b8">Puntaje IA</text>
+  </svg>`;
+
+  // Keywords
+  const kwColors = ['#2563eb','#7c3aed','#059669','#dc2626','#d97706','#0891b2','#e11d48','#0ea5e9'];
+  const keywords = (ai.palabras_clave || []).map((k,i) => 
+    `<span style="background:${hexToRgba(kwColors[i%kwColors.length],0.12)};color:${kwColors[i%kwColors.length]};border:1.5px solid ${hexToRgba(kwColors[i%kwColors.length],0.3)};padding:5px 13px;border-radius:99px;font-size:.8rem;font-weight:600;white-space:nowrap">${k}</span>`
+  ).join('');
+
+  // Fortalezas / Areas de mejora
+  const strengths = (ai.fortalezas || []).map(f =>
+    `<div style="display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid #e2e8f0">
+      <span style="color:#10b981;font-size:1.1rem;margin-top:1px">✅</span>
+      <span style="font-size:.88rem;color:#0f172a;line-height:1.5">${f}</span>
+    </div>`).join('');
+
+  const improvements = (ai.areas_mejora || []).map(a =>
+    `<div style="display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid #e2e8f0">
+      <span style="color:#f59e0b;font-size:1.1rem;margin-top:1px">⚡</span>
+      <span style="font-size:.88rem;color:#0f172a;line-height:1.5">${a}</span>
+    </div>`).join('');
+
+  // Per-question analysis cards
+  const qCards = answers.map((a, i) => {
+    const q = qData[i];
+    const lc = levelColor[q.nivel]; const lb = levelBg[q.nivel];
+    const bars2 = `<div style="height:8px;background:#e2e8f0;border-radius:99px;margin-top:6px;overflow:hidden">
+      <div style="width:${q.pct}%;height:100%;background:${color};border-radius:99px;transition:width 1s"></div></div>`;
+    return `<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:14px;padding:20px 22px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,.05)">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px">
+        <div>
+          <span style="font-size:.68rem;font-weight:700;color:${color};text-transform:uppercase;letter-spacing:.06em">${String(i+1).padStart(2,'0')} / ${a.label}</span>
+          <div style="font-size:.88rem;font-weight:600;color:#0f172a;margin-top:2px">${a.question}</div>
+        </div>
+        <span style="background:${lb};color:${lc};border:1px solid ${lc}33;padding:4px 12px;border-radius:99px;font-size:.72rem;font-weight:700">${levelLabel[q.nivel]||'Medio'} · ${q.aiScore}/10</span>
+      </div>
+      ${a.answer ? `<div style="background:#f8faff;border-left:3px solid ${color};padding:12px 14px;border-radius:0 8px 8px 0;font-size:.85rem;color:#334155;line-height:1.7;margin-bottom:12px;white-space:pre-wrap">${a.answer}</div>` 
+        : `<div style="background:#fef2f2;padding:10px 14px;border-radius:8px;font-size:.83rem;color:#991b1b;margin-bottom:12px">⚠️ Sin respuesta</div>`}
+      <div style="font-size:.72rem;color:#64748b;margin-bottom:4px">Extensión: ${a.answer.trim().length} caracteres</div>
+      ${bars2}
+      ${q.insight ? `<div style="margin-top:14px;padding:10px 14px;background:${hexToRgba(color,.06)};border-radius:8px;font-size:.82rem;color:#334155;line-height:1.6"><b style="color:${color}">🔍 Análisis:</b> ${q.insight}</div>` : ''}
+      ${q.sugerencia ? `<div style="margin-top:8px;padding:10px 14px;background:#f0fdf4;border-radius:8px;font-size:.82rem;color:#065f46;line-height:1.6"><b>💡 Sugerencia:</b> ${q.sugerencia}</div>` : ''}
+    </div>`;
+  }).join('');
+
+  // Module completion summary pie (simple)
+  const answered = answers.filter(a => a.answer.trim().length >= 30).length;
+  const total = answers.length;
+  const completePct = Math.round((answered/total)*100);
+
+  return `<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Reporte Visual — Módulo ${m.num}: ${m.title}</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sora',sans-serif;background:#f0f4ff;color:#0f172a;-webkit-font-smoothing:antialiased}
+.container{max-width:960px;margin:0 auto;padding:32px 24px}
+.card{background:#fff;border-radius:16px;box-shadow:0 4px 16px rgba(0,0,0,.06);overflow:hidden;margin-bottom:24px}
+.card-body{padding:28px}
+h2{font-family:'DM Serif Display',serif;font-size:1.4rem;color:#0f172a;margin-bottom:16px}
+h3{font-size:1rem;font-weight:700;color:#0f172a;margin-bottom:12px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.stat-card{background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;padding:18px;text-align:center}
+.stat-num{font-size:1.8rem;font-weight:800;line-height:1}
+.stat-label{font-size:.75rem;color:#64748b;margin-top:4px}
+.section-label{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:${color};margin-bottom:10px}
+.print-btn{position:fixed;bottom:24px;right:24px;background:${color};color:#fff;border:none;padding:12px 22px;border-radius:12px;font-family:'Sora',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;box-shadow:0 4px 14px ${hexToRgba(color,.4)};display:flex;align-items:center;gap:8px;z-index:100}
+.print-btn:hover{transform:translateY(-2px)}
+@media print{.print-btn{display:none!important}.container{padding:16px}}
+@media(max-width:640px){.grid-2,.grid-3{grid-template-columns:1fr}}
+</style>
+</head><body>
+
+<!-- COVER -->
+<div style="background:linear-gradient(135deg,#0f172a,${color} 60%,#0c4a6e);padding:56px 0 40px;margin-bottom:0">
+  <div class="container" style="padding-bottom:0">
+    <div style="display:flex;align-items:flex-start;gap:20px;flex-wrap:wrap">
+      <div style="background:rgba(255,255,255,.12);border-radius:14px;padding:16px 20px;font-size:2.5rem;flex-shrink:0">${m.icon}</div>
+      <div style="flex:1;min-width:200px">
+        <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.8);padding:5px 14px;border-radius:99px;font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px">📊 Reporte Visual · ${m.tag}</div>
+        <h1 style="font-family:'DM Serif Display',serif;font-size:clamp(1.6rem,4vw,2.4rem);color:#fff;line-height:1.2;margin-bottom:10px">Módulo ${m.num}: ${m.title}</h1>
+        <p style="color:rgba(255,255,255,.6);font-size:.85rem;line-height:1.6">${m.author}</p>
+      </div>
+    </div>
+    <!-- Student info bar -->
+    <div style="background:rgba(255,255,255,.08);border-top:1px solid rgba(255,255,255,.1);margin-top:32px;padding:16px 0;display:flex;gap:32px;flex-wrap:wrap">
+      ${s.nombre?`<div><div style="font-size:.68rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.06em">Estudiante</div><div style="font-size:.88rem;color:#fff;font-weight:600">${s.nombre}</div></div>`:''}
+      ${s.carrera?`<div><div style="font-size:.68rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.06em">Carrera</div><div style="font-size:.88rem;color:#fff;font-weight:600">${s.carrera}</div></div>`:''}
+      ${s.ciclo?`<div><div style="font-size:.68rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.06em">Ciclo</div><div style="font-size:.88rem;color:#fff;font-weight:600">${s.ciclo}${s.paralelo?' · Paralelo '+s.paralelo:''}</div></div>`:''}
+      ${s.idea?`<div><div style="font-size:.68rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.06em">Idea de negocio</div><div style="font-size:.88rem;color:#fff;font-weight:600">${s.idea}</div></div>`:''}
+      <div style="margin-left:auto"><div style="font-size:.68rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.06em">Fecha</div><div style="font-size:.88rem;color:#fff;font-weight:600">${now}</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- STATS ROW -->
+<div class="grid-3" style="margin-bottom:24px;margin-top:24px">
+  <div class="stat-card" style="border-color:${hexToRgba(color,.3)}">
+    <div class="stat-num" style="color:${color}">${completePct}%</div>
+    <div class="stat-label">Completitud del módulo</div>
+  </div>
+  <div class="stat-card" style="border-color:${hexToRgba(color,.3)}">
+    <div class="stat-num" style="color:${levelColor[ai.nivel_general]||color}">${ai.puntaje ?? 0}</div>
+    <div class="stat-label">Puntaje general (0-100)</div>
+  </div>
+  <div class="stat-card" style="border-color:${hexToRgba(color,.3)}">
+    <div class="stat-num" style="color:${levelColor[ai.nivel_general]||color}">${levelLabel[ai.nivel_general]||'—'}</div>
+    <div class="stat-label">Nivel de desarrollo</div>
+  </div>
+</div>
+
+<!-- RESUMEN + GAUGE -->
+<div class="card">
+  <div class="card-body">
+    <div style="display:flex;align-items:flex-start;gap:28px;flex-wrap:wrap">
+      <div style="flex-shrink:0">${gauge}</div>
+      <div style="flex:1;min-width:200px">
+        <div class="section-label">📝 Resumen ejecutivo</div>
+        <h2>Análisis general del módulo</h2>
+        <p style="font-size:.9rem;color:#334155;line-height:1.75;margin-bottom:16px">${ai.resumen_ejecutivo || ''}</p>
+        <div style="padding:14px 16px;background:${hexToRgba(color,.08)};border-radius:10px;border-left:4px solid ${color}">
+          <div style="font-size:.72rem;font-weight:700;color:${color};text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">🎯 Siguiente acción recomendada</div>
+          <p style="font-size:.88rem;color:#334155;line-height:1.6">${ai.siguiente_accion || ''}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- KEYWORDS -->
+<div class="card">
+  <div class="card-body">
+    <div class="section-label">🏷️ Conceptos clave identificados</div>
+    <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:4px">${keywords}</div>
+  </div>
+</div>
+
+<!-- BAR CHART -->
+<div class="card">
+  <div class="card-body">
+    <div class="section-label">📊 Gráfica de evaluación por pregunta</div>
+    <h2>Puntaje IA por pregunta</h2>
+    ${barChart}
+    <div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:12px">
+      ${Object.entries(levelColor).map(([k,v]) => `<div style="display:flex;align-items:center;gap:6px;font-size:.78rem;color:#64748b"><span style="width:12px;height:12px;background:${v};border-radius:3px;display:inline-block"></span>${levelLabel[k]}</div>`).join('')}
+    </div>
+  </div>
+</div>
+
+<!-- FORTALEZAS + AREAS -->
+<div class="grid-2">
+  <div class="card">
+    <div class="card-body">
+      <div class="section-label">✅ Fortalezas identificadas</div>
+      <h2>Lo que destacas</h2>
+      ${strengths}
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-body">
+      <div class="section-label">⚡ Oportunidades de mejora</div>
+      <h2>Áreas a desarrollar</h2>
+      ${improvements}
+    </div>
+  </div>
+</div>
+
+<!-- PROGRESS BAR por respuesta -->
+<div class="card">
+  <div class="card-body">
+    <div class="section-label">📏 Extensión de respuestas</div>
+    <h2>Detalle por pregunta</h2>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      ${qData.map((q,i) => `
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+            <span style="font-size:.8rem;font-weight:600;color:#334155">${String(i+1).padStart(2,'0')}. ${q.label}</span>
+            <span style="font-size:.75rem;font-family:monospace;color:${q.chars>=200?'#10b981':q.chars>=80?'#f59e0b':'#ef4444'}">${q.chars} chars</span>
+          </div>
+          <div style="height:10px;background:#e2e8f0;border-radius:99px;overflow:hidden">
+            <div style="width:${q.pct}%;height:100%;background:${levelColor[q.nivel]||color};border-radius:99px;transition:width 1.2s ease ${i*0.1}s"></div>
+          </div>
+        </div>`).join('')}
+    </div>
+  </div>
+</div>
+
+<!-- PER-QUESTION ANALYSIS -->
+<div class="card">
+  <div class="card-body">
+    <div class="section-label">🔍 Análisis detallado por pregunta</div>
+    <h2>Evaluación y feedback por cada respuesta</h2>
+    ${qCards}
+  </div>
+</div>
+
+<!-- RECOMENDACION FINAL -->
+<div class="card" style="border:2px solid ${color};background:linear-gradient(135deg,${hexToRgba(color,.05)},${hexToRgba(color,.02)})">
+  <div class="card-body">
+    <div class="section-label">🌟 Recomendación final</div>
+    <h2>Mensaje para el estudiante</h2>
+    <p style="font-size:.95rem;color:#334155;line-height:1.75">${ai.recomendacion_general || ''}</p>
+  </div>
+</div>
+
+<!-- THEORY REFERENCE -->
+<div class="card" style="background:linear-gradient(135deg,#0f172a,#1e293b)">
+  <div class="card-body">
+    <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#67e8f9;margin-bottom:10px">📚 Marco teórico de referencia</div>
+    <p style="font-size:.88rem;color:#94a3b8;line-height:1.7;margin-bottom:12px">${m.theory}</p>
+    <div style="font-size:.78rem;color:#475569;font-style:italic;border-top:1px solid rgba(255,255,255,.08);padding-top:10px">${m.cite}</div>
+  </div>
+</div>
+
+<div style="text-align:center;padding:20px 0;font-size:.75rem;color:#94a3b8">
+  IdeaLab Emprende · Generado el ${now} · Herramienta académica de emprendimiento
+</div>
+
+</div>
+
+<button class="print-btn" onclick="window.print()">🖨️ Guardar PDF</button>
+</body></html>`;
+}
+
+function hexToRgba(hex, alpha) {
+  const h = hex.replace('#','');
+  const r = parseInt(h.substring(0,2),16);
+  const g = parseInt(h.substring(2,4),16);
+  const b = parseInt(h.substring(4,6),16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+/* ================================================================
+   DOWNLOAD MODULE PDF
+   ================================================================ */
+function downloadModulePDF(idx) {
+  const m = MODULES[idx];
+  const state = getState();
+  const s = state.student || {};
+  const now = new Date().toLocaleDateString('es-EC', { year:'numeric', month:'long', day:'numeric' });
+  const color = m.color || '#2563eb';
+
+  const totalQ = m.questions.length;
+  const answeredQ = m.questions.filter(q => {
+    const a = state.answers[m.id] && state.answers[m.id][q.id];
+    return a && a.trim().length >= 30;
+  }).length;
+  const pct = Math.round((answeredQ / totalQ) * 100);
+
+  const questionsHTML = m.questions.map((q, i) => {
+    const ans = (state.answers[m.id] && state.answers[m.id][q.id]) || '';
+    const len = ans.trim().length;
+    const status = len >= 80 ? '✅ Completa' : len >= 30 ? '🟡 Parcial' : '⬜ Pendiente';
+    const sColor = len >= 80 ? '#065f46' : len >= 30 ? '#92400e' : '#9f1239';
+    const sBg = len >= 80 ? '#ecfdf5' : len >= 30 ? '#fffbeb' : '#fff1f2';
+    return `<div style="margin-bottom:22px;page-break-inside:avoid">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:7px">
+        <div>
+          <span style="font-size:6.5pt;font-weight:700;color:${color};text-transform:uppercase;letter-spacing:.06em;font-family:monospace">${String(i+1).padStart(2,'0')} · ${q.label}</span>
+          <div style="font-size:9.5pt;font-weight:600;color:#0f172a;margin-top:2px;line-height:1.4">${q.text}</div>
+        </div>
+        <span style="background:${sBg};color:${sColor};padding:3px 9px;border-radius:99px;font-size:6.5pt;font-weight:700;white-space:nowrap;flex-shrink:0;border:1px solid ${sColor}33">${status}</span>
+      </div>
+      <div style="background:#f8faff;border:1px solid #e2e8f0;border-left:4px solid ${color};border-radius:0 8px 8px 0;padding:12px 15px;min-height:52px">
+        ${ans
+          ? `<p style="font-size:8.8pt;color:#1e293b;line-height:1.72;white-space:pre-wrap;margin:0">${ans}</p>`
+          : `<p style="font-size:8pt;color:#94a3b8;font-style:italic;margin:0">Sin respuesta registrada</p>`}
+      </div>
+      ${ans ? `<div style="text-align:right;font-size:6.8pt;color:#94a3b8;margin-top:3px;font-family:monospace">${len} caracteres</div>` : ''}
+    </div>`;
+  }).join('');
+
+  // Mini bar chart (SVG) — answer lengths
+  const maxLen = Math.max(...m.questions.map(q => ((state.answers[m.id] && state.answers[m.id][q.id]) || '').trim().length), 1);
+  const chartW = 500, chartH = 90, bPad = { t:8, r:10, b:28, l:30 };
+  const nQ = m.questions.length;
+  const bSpacing = (chartW - bPad.l - bPad.r) / nQ;
+  const bw = Math.min(32, bSpacing - 6);
+  const scH = chartH - bPad.t - bPad.b;
+  const svgBars = m.questions.map((q, i) => {
+    const ans = (state.answers[m.id] && state.answers[m.id][q.id]) || '';
+    const len = ans.trim().length;
+    const bh = Math.max(2, (len / maxLen) * scH);
+    const x = bPad.l + i * bSpacing + (bSpacing - bw) / 2;
+    const y = bPad.t + scH - bh;
+    const bc = len >= 80 ? '#10b981' : len >= 30 ? '#f59e0b' : '#e2e8f0';
+    const shortLabel = q.label.length > 9 ? q.label.substring(0,8)+'…' : q.label;
+    return `<rect x="${x}" y="${y}" width="${bw}" height="${bh}" rx="3" fill="${bc}"/>
+            <text x="${x+bw/2}" y="${chartH-bPad.b+11}" text-anchor="middle" font-size="6" fill="#94a3b8" transform="rotate(-30 ${x+bw/2} ${chartH-bPad.b+11})">${shortLabel}</text>
+            ${len>0?`<text x="${x+bw/2}" y="${y-3}" text-anchor="middle" font-size="6" fill="${bc}" font-weight="700">${len}</text>`:''}`;
+  }).join('');
+  const svgChart = `<svg viewBox="0 0 ${chartW} ${chartH}" xmlns="http://www.w3.org/2000/svg" width="100%">${svgBars}</svg>`;
+
+  const html = `<!DOCTYPE html>
+<html lang="es"><head>
+<meta charset="UTF-8">
+<title>Módulo ${m.num} — ${m.title}</title>
+<style>
+  @page { size: A4; margin: 1.8cm 2cm; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; color: #0f172a; font-size: 10pt; line-height: 1.5; background: #fff; }
+  .letterhead { border-bottom: 3px solid #c41230; padding-bottom: 12px; margin-bottom: 16px; display: flex; align-items: center; gap: 12px; }
+  .lh-seal { flex-shrink: 0; }
+  .lh-center { flex: 1; border-left: 1.5px solid #e2e8f0; padding-left: 12px; }
+  .lh-center .uni { font-size: 10.5pt; font-weight: 800; color: #1a1a1a; line-height: 1.2; }
+  .lh-center .fac { font-size: 8pt; color: #c41230; font-weight: 700; margin-top: 2px; }
+  .lh-center .app { font-size: 7pt; color: #64748b; margin-top: 2px; }
+  .lh-right { flex-shrink: 0; display: flex; align-items: center; gap: 6px; }
+  .module-strip { background: linear-gradient(135deg, #c41230, #a30d24); border-radius: 8px; padding: 16px 20px; margin-bottom: 16px; display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+  .module-strip h1 { font-size: 16pt; font-weight: 800; color: #fff; line-height: 1.2; }
+  .module-strip .tag { display: inline-block; background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.25); color: rgba(255,255,255,.85); padding: 3px 10px; border-radius: 99px; font-size: 7pt; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 7px; }
+  .module-strip .sub { font-size: 7.5pt; color: rgba(255,255,255,.55); margin-top: 4px; }
+  .ms-right { text-align: right; font-size: 7.5pt; color: rgba(255,255,255,.55); flex-shrink: 0; }
+  .ms-right strong { color: #fff; font-size: 8.5pt; display: block; margin-bottom: 2px; }
+  .student-box { border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 11px 14px; margin-bottom: 14px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 9px; background: #f8faff; }
+  .sf label { font-size: 6.2pt; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: .05em; display: block; }
+  .sf span { font-size: 8.5pt; font-weight: 600; color: #1e293b; }
+  .progress-row { display: flex; align-items: center; gap: 14px; background: ${color}0d; border: 1px solid ${color}33; border-radius: 8px; padding: 10px 14px; margin-bottom: 14px; }
+  .prog-pct { font-size: 20pt; font-weight: 800; color: ${color}; font-family: monospace; line-height: 1; }
+  .prog-text { flex: 1; font-size: 8pt; color: #334155; }
+  .prog-track { width: 90px; height: 7px; background: #e2e8f0; border-radius: 99px; overflow: hidden; }
+  .prog-fill { height: 100%; background: ${pct>=60?'#10b981':color}; border-radius: 99px; width: ${pct}%; }
+  .theory-box { background: #f0f4ff; border-left: 4px solid ${color}; padding: 10px 13px; border-radius: 0 7px 7px 0; margin-bottom: 16px; }
+  .theory-label { font-size: 6.8pt; font-weight: 700; color: ${color}; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 4px; }
+  .theory-box p { font-size: 7.8pt; color: #334155; line-height: 1.6; }
+  .section-title { font-size: 10.5pt; font-weight: 800; color: #0f172a; border-bottom: 2px solid #e2e8f0; padding-bottom: 7px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+  .chart-box { background: #f8faff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 14px; margin-bottom: 16px; }
+  .chart-label { font-size: 6.8pt; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 8px; }
+  .legend { display: flex; gap: 14px; margin-top: 6px; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 4px; font-size: 6.5pt; color: #64748b; }
+  .legend-dot { width: 8px; height: 8px; border-radius: 2px; }
+  .footer { border-top: 1px solid #e2e8f0; margin-top: 24px; padding-top: 10px; display: flex; justify-content: space-between; font-size: 6.8pt; color: #94a3b8; }
+  .print-btn { position: fixed; bottom: 18px; right: 18px; background: ${color}; color: #fff; border: none; padding: 10px 18px; border-radius: 10px; font-size: 8.5pt; font-weight: 700; cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,.2); display: flex; align-items: center; gap: 6px; }
+  .print-btn:hover { transform: translateY(-2px); }
+  @media print { .print-btn { display: none !important; } body { font-size: 9pt; } }
+</style>
+</head><body>
+
+<!-- LETTERHEAD -->
+<div class="letterhead">
+  <div class="lh-seal">
+    ${logos.official
+      ? `<img src="${logos.official}" style="height:62px;max-width:160px;object-fit:contain">`
+      : `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" width="62" height="62">
+        <circle cx="50" cy="50" r="46" fill="#fff" stroke="#1a1a1a" stroke-width="2.5"/>
+        <circle cx="50" cy="50" r="38" fill="#fff" stroke="#1a1a1a" stroke-width="1"/>
+        <path id="arcT" d="M 9,50 A 41,41 0 1,1 91,50" fill="none"/>
+        <text font-size="4.8" fill="#1a1a1a" font-family="serif" letter-spacing="1.1"><textPath href="#arcT" startOffset="4%">IN THESAVRIS SAPIENTIAE GLORIFICATIO VITAE</textPath></text>
+        <path d="M50,28 Q54,20 50,13 Q46,20 50,28" fill="#c41230"/>
+        <rect x="48" y="28" width="4" height="15" rx="2" fill="#3d2010"/>
+        <text x="50" y="81" text-anchor="middle" font-size="8" fill="#1a1a1a" font-family="serif" letter-spacing="2" font-weight="700">1859</text>
+      </svg>`}
+  </div>
+  <div class="lh-center">
+    <div class="uni">Universidad Nacional de Loja</div>
+    <div class="fac">Facultad Jurídica, Social y Administrativa</div>
+    <div class="app">IdeaLab Emprende · Herramienta académica de emprendimiento</div>
+  </div>
+  <div class="lh-right">
+    ${logos.bear
+      ? `<img src="${logos.bear}" style="height:58px;object-fit:contain">`
+      : `<svg viewBox="0 0 80 90" xmlns="http://www.w3.org/2000/svg" width="46" height="52">
+        <ellipse cx="40" cy="78" rx="28" ry="17" fill="#c41230"/>
+        <circle cx="40" cy="39" r="24" fill="#1a1a1a"/>
+        <circle cx="20" cy="19" r="9" fill="#1a1a1a"/>
+        <circle cx="60" cy="19" r="9" fill="#1a1a1a"/>
+        <ellipse cx="40" cy="47" rx="12" ry="9" fill="#f0dfc8"/>
+        <circle cx="31" cy="34" r="5.5" fill="white"/><circle cx="49" cy="34" r="5.5" fill="white"/>
+        <circle cx="32" cy="34" r="2.5" fill="#111"/><circle cx="50" cy="34" r="2.5" fill="#111"/>
+        <rect x="23" y="28" width="15" height="11" rx="3" fill="none" stroke="white" stroke-width="2"/>
+        <rect x="42" y="28" width="15" height="11" rx="3" fill="none" stroke="white" stroke-width="2"/>
+        <line x1="38" y1="33" x2="42" y2="33" stroke="white" stroke-width="1.5"/>
+      </svg>`}
+    ${logos.faculty
+      ? `<img src="${logos.faculty}" style="height:48px;max-width:80px;object-fit:contain">`
+      : `<svg viewBox="0 0 90 50" xmlns="http://www.w3.org/2000/svg" width="68" height="38">
+        <text x="4" y="38" font-family="'Brush Script MT','Segoe Script',cursive" font-size="42" fill="#1a1a1a" font-style="italic">unl</text>
+        <line x1="4" y1="44" x2="76" y2="44" stroke="#1a1a1a" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="81" y1="6" x2="81" y2="48" stroke="#1a1a1a" stroke-width="2" opacity=".4"/>
+      </svg>`}
+  </div>
+</div>
+<div class="module-strip">
+  <div>
+    <div class="tag">${m.icon} Módulo ${m.num} · ${m.tag}</div>
+    <h1>${m.title}</h1>
+    <div class="sub">${m.author}</div>
+  </div>
+  <div class="ms-right">
+    <strong>Registro de avance</strong>${now}
+  </div>
+</div>
+
+<div class="student-box">
+  <div class="sf"><label>Estudiante</label><span>${s.nombre||'—'}</span></div>
+  <div class="sf"><label>Carrera</label><span>${s.carrera||'—'}</span></div>
+  <div class="sf"><label>Ciclo · Paralelo</label><span>${s.ciclo||'—'}${s.paralelo?' · Par. '+s.paralelo:''}</span></div>
+  <div class="sf"><label>Correo</label><span>${s.correo||'—'}</span></div>
+  <div class="sf"><label>Idea de negocio</label><span>${s.idea||'—'}</span></div>
+  <div class="sf"><label>Estado</label><span style="color:${pct>=60?'#059669':'#dc2626'};font-weight:800">${pct>=60?'✅ Completado':'⏳ En progreso'}</span></div>
+</div>
+
+<div class="progress-row">
+  <div class="prog-pct">${pct}%</div>
+  <div class="prog-text">
+    <strong>${answeredQ} de ${totalQ} preguntas</strong> con respuesta suficiente (≥30 chars).<br>
+    <span style="color:#64748b">${pct>=60 ? 'Módulo cumple el umbral mínimo de completitud.' : `Faltan ${Math.max(0,Math.ceil(totalQ*0.6)-answeredQ)} respuesta(s) para alcanzar el 60% requerido.`}</span>
+  </div>
+  <div class="prog-track"><div class="prog-fill"></div></div>
+</div>
+
+<div class="chart-box">
+  <div class="chart-label">📊 Extensión de respuestas (caracteres por pregunta)</div>
+  ${svgChart}
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#10b981"></div>Completa (≥80 chars)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div>Parcial (30–79)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#e2e8f0"></div>Pendiente (&lt;30)</div>
+  </div>
+</div>
+
+<div class="theory-box">
+  <div class="theory-label">📖 Marco teórico</div>
+  <p>${m.theory}</p>
+  <p style="margin-top:5px;font-style:italic;color:#64748b;font-size:7pt">📚 ${m.cite}</p>
+</div>
+
+<div class="section-title">📝 Respuestas del estudiante</div>
+${questionsHTML}
+
+<div class="footer">
+  <span>IdeaLab Emprende · Herramienta académica de emprendimiento</span>
+  <span>Módulo ${m.num} de ${MODULES.length} · Generado el ${now}</span>
+</div>
+
+<button class="print-btn" onclick="window.print()">🖨️ Guardar como PDF</button>
+</body></html>`;
+
+  const w = window.open('', '_blank', 'width=920,height=860');
+  w.document.write(html);
+  w.document.close();
+  showToast('📥 Documento PDF listo para guardar');
+}
+
+/* ================================================================
+   EXPORT
+   ================================================================ */
+function showExportModal() { document.getElementById('export-modal').classList.add('show'); }
+function hideExportModal() { document.getElementById('export-modal').classList.remove('show'); }
+
+function buildReportText() {
+  const state = getState(); const s = state.student||{};
+  const now = new Date().toLocaleDateString('es-EC',{year:'numeric',month:'long',day:'numeric'});
+  let txt = `IDEALAB EMPRENDE — REPORTE\n${now}\n${'='.repeat(60)}\n\n`;
+  txt += `Estudiante: ${s.nombre||'—'}\nCarrera: ${s.carrera||'—'}\nCiclo: ${s.ciclo||'—'}\nIdea: ${s.idea||'—'}\n\n${'='.repeat(60)}\n`;
+  MODULES.forEach(m => {
+    txt += `\nMÓDULO ${m.num}: ${m.title}\n${'─'.repeat(50)}\n`;
+    m.questions.forEach(q => { txt += `\n${q.label}:\n${(state.answers[m.id]&&state.answers[m.id][q.id])||'(Sin respuesta)'}\n`; });
+  });
+  return txt;
+}
+
+function exportTxt() {
+  const blob = new Blob([buildReportText()],{type:'text/plain;charset=utf-8'});
+  downloadBlob(blob,'IdeaLab_Reporte.txt');
+  hideExportModal(); showToast('📄 .TXT descargado');
+}
+
+function exportJson() {
+  const blob = new Blob([JSON.stringify(getState(),null,2)],{type:'application/json'});
+  downloadBlob(blob,'IdeaLab_Respaldo.json');
+  hideExportModal(); showToast('🗂️ .JSON descargado');
+}
+
+function exportPrint() {
+  hideExportModal();
+  const state = getState(); const s = state.student||{};
+  const now = new Date().toLocaleDateString('es-EC',{year:'numeric',month:'long',day:'numeric'});
+  let html = `<html><head><meta charset="UTF-8"><title>IdeaLab Reporte</title>
+  <style>body{font-family:Georgia,serif;max-width:800px;margin:40px auto;color:#1e293b;line-height:1.65}h1{color:#1d4ed8;font-size:1.6rem;border-bottom:3px solid #1d4ed8;padding-bottom:10px}h2{color:#1d4ed8;font-size:1.1rem;margin-top:30px;border-left:4px solid #06b6d4;padding-left:10px}h3{font-size:.95rem;color:#334155;margin-top:16px}.meta{background:#f0f4ff;padding:16px;border-radius:8px;margin:20px 0;font-size:.9rem}.answer{background:#f8faff;border:1px solid #e2e8f0;padding:12px;border-radius:6px;margin-top:6px;font-size:.88rem;white-space:pre-wrap}@page{margin:2cm}</style>
+  </head><body><h1>💡 IdeaLab Emprende</h1><p style="color:#64748b;font-size:.85rem;">${now}</p>
+  <div class="meta"><b>Estudiante:</b> ${s.nombre||'—'} | <b>Carrera:</b> ${s.carrera||'—'} | <b>Idea:</b> ${s.idea||'—'}</div>`;
+  MODULES.forEach(m => {
+    html += `<h2>${m.icon} Módulo ${m.num}: ${m.title}</h2>`;
+    m.questions.forEach(q => {
+      const a = (state.answers[m.id]&&state.answers[m.id][q.id])||'(Sin respuesta)';
+      html += `<h3>${q.label}</h3><div class="answer">${a}</div>`;
+    });
+  });
+  html += '</body></html>';
+  const w = window.open('','_blank'); w.document.write(html); w.document.close();
+  setTimeout(() => w.print(), 500);
+}
+
+function downloadBlob(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
+}
+
+/* ================================================================
+   CLEAR / TOAST / SIDEBAR
+   ================================================================ */
+function confirmClear() {
+  if (confirm('¿Seguro? Esta acción no se puede deshacer.')) { localStorage.removeItem(STORAGE_KEY); location.reload(); }
+}
+
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebar-overlay').classList.toggle('show');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebar-overlay').classList.remove('show');
+}
+
+document.getElementById('export-modal').addEventListener('click', e => { if (e.target === e.currentTarget) hideExportModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { hideExportModal(); closeSidebar(); } });
+setInterval(() => { if (currentScreen === 'module' && Object.keys(getState().answers).length > 0) showToast('💾 Guardado automáticamente'); }, 30000);
+
+init();
+</script>
+</body></html>
